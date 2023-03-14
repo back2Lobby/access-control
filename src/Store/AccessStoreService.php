@@ -8,6 +8,7 @@ use Back2Lobby\AccessControl\Models\Role;
 use Back2Lobby\AccessControl\Store\Contracts\Storable;
 use Back2Lobby\AccessControl\Store\Enumerations\SyncFlag;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class AccessStoreService implements Storable
 {
@@ -18,9 +19,7 @@ class AccessStoreService implements Storable
     private Collection $map;
 
     public function __construct(){
-        $this->roles = collect();
-        $this->permissions = collect();
-        $this->map = collect();
+        $this->sync();
     }
 
     public function sync(SyncFlag $flag = SyncFlag::SyncAll): void
@@ -36,6 +35,20 @@ class AccessStoreService implements Storable
         if($flag === SyncFlag::SyncAll || $flag === SyncFlag::OnlyMap){
             $this->map = PermissionRole::get();
         }
+
+        // cache updated object
+        $this->cache();
+    }
+
+    public function cache(): void
+    {
+        // cache store for 1 day
+        Cache::put("access-store",$this,(60*60)*24);
+    }
+
+    public function clearCache(): void
+    {
+        Cache::forget("access-store");
     }
 
     public function getRole(Role|string|int $role): Role|null

@@ -9,8 +9,6 @@ use Illuminate\Support\Collection;
 
 interface Storable
 {
-
-
     /**
      * Sync all roles and permissions with database
      *
@@ -19,10 +17,25 @@ interface Storable
      */
     public function sync(SyncFlag $flag = SyncFlag::SyncAll): void;
 
+
+    /**
+     * Cache this object
+     *
+     * @return void
+     */
+    public function cache(): void;
+
+    /**
+     * Clear the cached object
+     *
+     * @return void
+     */
+    public function clearCache(): void;
+
     /**
      * Get role if it exists
      *
-     * @param Role|string $role
+     * @param Role|string|int $role
      * @return Role|null
      */
     public function getRole(Role|string|int $role): Role|null;
@@ -30,7 +43,7 @@ interface Storable
     /**
      * Get permission if it exists
      *
-     * @param Permission|string $permission
+     * @param Permission|string|int $permission
      * @return Permission|null
      */
     public function getPermission(Permission|string|int $permission): Permission|null;

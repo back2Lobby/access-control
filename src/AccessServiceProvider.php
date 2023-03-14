@@ -4,7 +4,7 @@ namespace Back2Lobby\AccessControl;
 
 use Back2Lobby\AccessControl\Service\AccessControlService;
 use Back2Lobby\AccessControl\Store\AccessStoreService;
-use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\ServiceProvider;
 
 class AccessServiceProvider extends ServiceProvider
@@ -15,10 +15,12 @@ class AccessServiceProvider extends ServiceProvider
 	public function register(): void
 	{
         $this->app->singleton("access-store", function () {
-            return new AccessStoreService();
+
+            // if access store is cached then no need to make a new one
+            return Cache::get('access-store') ?? new AccessStoreService();
         });
 
-		$this->app->singleton("access-control", function (Application $app) {
+		$this->app->singleton("access-control", function ($app) {
 			return new AccessControlService($app->make("access-store"));
 		});
 

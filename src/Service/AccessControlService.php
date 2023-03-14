@@ -2,14 +2,13 @@
 
 namespace Back2Lobby\AccessControl\Service;
 
-use App\Exceptions\InvalidRoleException;
-use App\Exceptions\InvalidUserException;
+use Back2Lobby\AccessControl\Exceptions\InvalidRoleException;
+use Back2Lobby\AccessControl\Exceptions\InvalidUserException;
 use Back2Lobby\AccessControl\Models\Role;
 use Back2Lobby\AccessControl\Store\Contracts\Storable;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
-use Auth;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class AccessControlService
 {
@@ -19,7 +18,6 @@ class AccessControlService
 
         static::$store = $store;
 
-        static::$store->sync();
     }
 
     public static function getStore(): Storable
