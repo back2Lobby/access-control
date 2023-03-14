@@ -2,7 +2,6 @@
 
 namespace Back2Lobby\AccessControl\Service;
 
-use App\Exceptions\InvalidPermissionException;
 use App\Models\User;
 use Back2Lobby\AccessControl\Models\Permission;
 use Back2Lobby\AccessControl\Models\Role;

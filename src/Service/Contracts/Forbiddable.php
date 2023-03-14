@@ -3,7 +3,6 @@
 namespace Back2Lobby\AccessControl\Service\Contracts;
 
 use Back2Lobby\AccessControl\Models\Permission;
-use App\Exceptions\InvalidPermissionException;
 
 interface Forbiddable
 {

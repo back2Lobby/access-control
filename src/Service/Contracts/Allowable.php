@@ -2,7 +2,6 @@
 
 namespace Back2Lobby\AccessControl\Service\Contracts;
 
-use App\Exceptions\InvalidPermissionException;
 use Back2Lobby\AccessControl\Models\Permission;
 
 interface Allowable

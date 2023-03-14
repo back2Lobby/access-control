@@ -2,10 +2,9 @@
 
 namespace Back2Lobby\AccessControl\Service;
 
-use App\Exceptions\InvalidPermissionException;
 use Back2Lobby\AccessControl\Models\Permission;
 use Back2Lobby\AccessControl\Models\Role;
-use AccessControl\Service\Contracts\Disallowable;
+use Back2Lobby\AccessControl\Service\Contracts\Disallowable;
 use Back2Lobby\AccessControl\Store\Contracts\Storable;
 use Back2Lobby\AccessControl\Store\Enumerations\SyncFlag;
 use DB;

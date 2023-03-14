@@ -2,7 +2,7 @@
 
 namespace Back2Lobby\AccessControl\Service\Contracts;
 
-use App\Exceptions\InvalidPermissionException;
+use Back2Lobby\AccessControl\Exceptions\InvalidPermissionException;
 use App\Models\User;
 
 interface Retractable

@@ -2,10 +2,9 @@
 
 namespace Back2Lobby\AccessControl\Service;
 
-use App\Exceptions\InvalidRoleException;
+use Back2Lobby\AccessControl\Exceptions\InvalidRoleException;
 use App\Models\User;
 use Back2Lobby\AccessControl\Models\Role;
-use Carbon\Exceptions\InvalidDateException;
 use Illuminate\Database\Eloquent\Model;
 use RuntimeException;
 

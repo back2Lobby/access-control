@@ -2,12 +2,11 @@
 
 namespace Back2Lobby\AccessControl\Service;
 
-use App\Exceptions\InvalidRoleableException;
-use App\Exceptions\InvalidRoleablesConfigException;
-use App\Exceptions\InvalidUserException;
+use Back2Lobby\AccessControl\Exceptions\InvalidRoleableException;
+use Back2Lobby\AccessControl\Exceptions\InvalidUserException;
 use App\Models\User;
 use Back2Lobby\AccessControl\Models\Role;
-use AccessControl\Service\Contracts\Assignable;
+use Back2Lobby\AccessControl\Service\Contracts\Assignable;
 use Illuminate\Database\Eloquent\Model;
 use DB;
 use Illuminate\Database\QueryException;

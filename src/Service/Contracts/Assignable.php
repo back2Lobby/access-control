@@ -2,7 +2,7 @@
 
 namespace Back2Lobby\AccessControl\Service\Contracts;
 
-use App\Exceptions\InvalidUserException;
+use Back2Lobby\AccessControl\Exceptions\InvalidUserException;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 
