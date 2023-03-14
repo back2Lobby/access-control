@@ -25,7 +25,14 @@ class AccessServiceProvider extends ServiceProvider
 			return new AccessControlService($app->make("access-store"));
 		});
 
+        // add migrations
         $this->publishMigrations();
+
+
+        // setup check point
+        $this->app->make(Gate::class)->before(function(){
+            return $this->accessControlCheck(...func_get_args());
+        });
 	}
 
 	/**
@@ -50,11 +57,6 @@ class AccessServiceProvider extends ServiceProvider
         $target = $this->app->databasePath().'/migrations/'.$timestamp.'_create_access_control_tables.php';
 
         $this->publishes([$stub => $target], 'access-control.migrations');
-
-        // setup check point
-        $this->app->make(Gate::class)->before(function(){
-            return $this->accessControlCheck(...func_get_args());
-        });
     }
 
 
