@@ -1,0 +1,33 @@
+{
+    "name": "back2lobby/access-control",
+    "description": "Roles and Permissions manager for laravel",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tayyab Javaid",
+            "email": "tayyabisking1101@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": "^8.0",
+        "illuminate/collections": "^9.0|^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Back2Lobby\\AccessControl\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Back2Lobby\\AccessControl\\AccessServiceProvider"
+            ],
+            "aliases": {
+                "AccessControl": "Back2Lobby\\AccessControl\\Facades\\AccessControlFacade",
+                "AccessStore": "Back2Lobby\\AccessControl\\Facades\\AccessStoreFacade"
+            }
+        }
+    }
+}
