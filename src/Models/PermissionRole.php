@@ -2,6 +2,9 @@
 
 namespace Back2Lobby\AccessControl\Models;
 
+use Back2Lobby\AccessControl\Facades\AccessControlFacade;
+use Back2Lobby\AccessControl\Store\Enumerations\SyncFlag;
+use Back2Lobby\AccessControl\Traits\syncOnEvents;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Pivot;
@@ -10,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class PermissionRole extends Pivot
 {
-    use HasFactory;
+    use HasFactory, syncOnEvents;
 
     public function role()
     {

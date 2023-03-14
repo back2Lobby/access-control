@@ -3,6 +3,9 @@
 namespace Back2Lobby\AccessControl\Models;
 
 use App\Models\User;
+use Back2Lobby\AccessControl\Facades\AccessControlFacade;
+use Back2Lobby\AccessControl\Store\Enumerations\SyncFlag;
+use Back2Lobby\AccessControl\Traits\syncOnEvents;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +15,7 @@ use RuntimeException;
 
 class Role extends Model
 {
-	use HasFactory;
+	use HasFactory, syncOnEvents;
 
 	protected $casts = [
 		'roleables' => 'array'

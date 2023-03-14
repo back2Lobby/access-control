@@ -2,7 +2,7 @@
 
 namespace Back2Lobby\AccessControl\Facades;
 
-use App\Model\User;
+use App\Models\User;
 use Back2Lobby\AccessControl\Models\Role;
 use Back2Lobby\AccessControl\Service\AllowPermission;
 use Back2Lobby\AccessControl\Service\AssignRole;
@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static AssignRole assign(Role|string $role, ?Model $roleable = null)
  * @method static RetractRole retract(Role|string $role, ?Model $roleable = null)
  * @method static UserRoleCheck is(User $user)
+ * @method static RolePermissionCheck|null canRole(Role|string $role,$throwException = false)
  * @method static UserPermissionCheck|null canUser(User $user = null,$throwException = false)
  * @method static bool resetUser(User $user)
  * @method static bool resetRole(Role|string $role)
