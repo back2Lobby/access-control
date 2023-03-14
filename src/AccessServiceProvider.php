@@ -21,6 +21,8 @@ class AccessServiceProvider extends ServiceProvider
 		$this->app->singleton("access-control", function (Application $app) {
 			return new AccessControlService($app->make("access-store"));
 		});
+
+        $this->publishMigrations();
 	}
 
 	/**
@@ -30,4 +32,20 @@ class AccessServiceProvider extends ServiceProvider
 	{
 		//
 	}
+
+    /**
+     * Publish the package's migrations.
+     *
+     * @return void
+     */
+    protected function publishMigrations()
+    {
+        $timestamp = date('Y_m_d_His', time());
+
+        $stub = __DIR__.'/../migrations/create_access_control_tables.php';
+
+        $target = $this->app->databasePath().'/migrations/'.$timestamp.'_create_access_control_tables.php';
+
+        $this->publishes([$stub => $target], 'access-control.migrations');
+    }
 }
