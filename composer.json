@@ -2,6 +2,11 @@
     "name": "back2lobby/access-control",
     "description": "Roles and Permissions manager for laravel",
     "license": "MIT",
+    "keywords": [
+        "laravel",
+        "roles",
+        "permissions"
+    ],
     "authors": [
         {
             "name": "Tayyab Javaid",
