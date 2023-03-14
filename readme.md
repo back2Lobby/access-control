@@ -29,7 +29,10 @@ AccessControl::assign('editor')->to($user);
 AccessControl::assign('editor')->to('edit',$post);
 
 // checking the permission on user for a roleable model
-AccessControl::canUser($user)->do("edit",$post); 
+AccessControl::canUser($user)->do("edit",$post);
+
+// checking a role on user
+AccessControl::is($user)->an("editor"); 
 ```
 
 

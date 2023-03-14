@@ -2,6 +2,7 @@
 
 namespace Back2Lobby\AccessControl;
 
+use Back2Lobby\AccessControl\Facades\AccessControlFacade;
 use Back2Lobby\AccessControl\Service\AccessControlService;
 use Back2Lobby\AccessControl\Store\AccessStoreService;
 use Illuminate\Contracts\Auth\Access\Gate;
@@ -72,6 +73,6 @@ class AccessServiceProvider extends ServiceProvider
     {
         $roleable = isset($arguments[0]) > 0 ? $arguments[0] : null;
 
-        return AccessControl::canUser($user,true)->do($authority,$roleable) ?? false;
+        return AccessControlFacade::canUser($user,true)->do($authority,$roleable) ?? false;
     }
 }

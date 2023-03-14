@@ -2,8 +2,8 @@
 
 namespace Back2Lobby\AccessControl\Traits;
 
-use AccessControl;
-use App\Exceptions\InvalidPermissionException;
+use Back2Lobby\AccessControl\Exceptions\InvalidPermissionException;
+use Back2Lobby\AccessControl\Facades\AccessControlFacade;
 use Back2Lobby\AccessControl\Models\Role;
 use Back2Lobby\AccessControl\Models\Permission;
 
@@ -71,7 +71,7 @@ trait isRoleable
             ->map(function ($group) {
                 $user = $group->first();
                 $roles = $group->pluck('role_id');
-                $user->roles = $roles->map(fn($r) => AccessControl::getStore()->getRole($r))->filter(fn($r) => ! is_null($r));
+                $user->roles = $roles->map(fn($r) => AccessControlFacade::getStore()->getRole($r))->filter(fn($r) => ! is_null($r));
                 return $user;
             })
             ->values()
@@ -92,10 +92,10 @@ trait isRoleable
     {
 
         // getting a valid permission first
-        if($permission = AccessControl::getStore()->getPermission($permission)){
+        if($permission = AccessControlFacade::getStore()->getPermission($permission)){
 
             // get all the roles that are allowed for this permission
-            $allowedRoles = AccessControl::getStore()->getAllowedRolesOf($permission);
+            $allowedRoles = AccessControlFacade::getStore()->getAllowedRolesOf($permission);
 
             // no need to go any further if no role can have this permission
             if($allowedRoles->count() <= 0) return static::whereIn("id",[]);

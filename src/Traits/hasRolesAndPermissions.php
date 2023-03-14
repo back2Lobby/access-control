@@ -2,9 +2,9 @@
 
 namespace Back2Lobby\AccessControl\Traits;
 
-use AccessControl;
-use App\Exceptions\InvalidPermissionException;
-use App\Exceptions\InvalidRoleException;
+use Back2Lobby\AccessControl\Exceptions\InvalidPermissionException;
+use Back2Lobby\AccessControl\Exceptions\InvalidRoleException;
+use Back2Lobby\AccessControl\Facades\AccessControlFacade;
 use Back2Lobby\AccessControl\Models\Role;
 use Back2Lobby\AccessControl\Models\Permission;
 use App\Models\User;
@@ -33,16 +33,16 @@ trait hasRolesAndPermissions
         $roles = RoleUser::where("user_id",$this->id)->get(["role_id"])->pluck("role_id");
 
         // get all the permission of each role
-        $permissions = $roles->map(fn($r) => AccessControl::getStore()->getRole($r))
+        $permissions = $roles->map(fn($r) => AccessControlFacade::getStore()->getRole($r))
             ->filter(fn($r) => ! is_null($r))
-            ->map(fn($r) => AccessControl::getStore()->getAllowedPermissionsOf($r));
+            ->map(fn($r) => AccessControlFacade::getStore()->getAllowedPermissionsOf($r));
 
         return $permissions->flatten()->unique();
     }
 
     public function assign(Role|string $role, Model $roleable = null): bool
     {
-        return AccessControl::assign($role, $roleable)->to($this);
+        return AccessControlFacade::assign($role, $roleable)->to($this);
     }
 
     /**
@@ -52,7 +52,7 @@ trait hasRolesAndPermissions
      */
     public static function whereIs(Role|string $role, Model $roleable = null): Builder
     {
-        if ($role = AccessControl::getStore()->getRole($role)) {
+        if ($role = AccessControlFacade::getStore()->getRole($role)) {
             return User::whereHas("roles", function ($q) use ($role, $roleable) {
                 $q->where("role_id", $role->id);
                 if ($roleable && $roleable->id) {
@@ -79,12 +79,12 @@ trait hasRolesAndPermissions
      */
     public static function whereCan(Permission|string $permission,Model $roleable=null,bool $includeIndirectRoles = false): \Illuminate\Database\Eloquent\Builder
     {
-        if ($permission = AccessControl::getStore()->getPermission($permission)) {
+        if ($permission = AccessControlFacade::getStore()->getPermission($permission)) {
 
             $users = User::query();
 
             // get all roles that are directly allowed for this permission
-            $roles = AccessControl::getStore()->getAllowedRolesOf($permission);
+            $roles = AccessControlFacade::getStore()->getAllowedRolesOf($permission);
 
             // making sure that we get only roles that allow this roleable
             $roles = $roles->filter(function($r) use($roleable){
@@ -92,7 +92,7 @@ trait hasRolesAndPermissions
             });
 
             if($includeIndirectRoles) {
-                $roles = $roles->concat(AccessControl::getStore()->getIndirectRolesOf($permission));
+                $roles = $roles->concat(AccessControlFacade::getStore()->getIndirectRolesOf($permission));
             }
 
             // if no roles available then no need to go any further
