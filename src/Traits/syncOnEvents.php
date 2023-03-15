@@ -21,8 +21,7 @@ trait syncOnEvents
 
         // sync roles and permissions again on these events
         $events = [
-            'saved', 'created', 'updated', 'deleted',
-            'forceDeleted', 'trashed', 'restored',
+            'saved', 'created', 'updated', 'deleted'
         ];
 
         foreach ($events as $event) {

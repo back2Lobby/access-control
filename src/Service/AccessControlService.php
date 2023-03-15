@@ -6,6 +6,7 @@ use Back2Lobby\AccessControl\Exceptions\InvalidRoleException;
 use Back2Lobby\AccessControl\Exceptions\InvalidUserException;
 use Back2Lobby\AccessControl\Models\Role;
 use Back2Lobby\AccessControl\Store\Contracts\Storable;
+use Back2Lobby\AccessControl\Store\Enumerations\SyncFlag;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -101,7 +102,7 @@ class AccessControlService
 	public static function is(User $user): UserRoleCheck
 	{
 		if ($user->id) {
-			return new UserRoleCheck($user);
+			return new UserRoleCheck(static::getStore(),$user);
 		} else {
 			throw new InvalidRoleException("Provided role cannot be validated because its either invalid or not found in database");
 		}
@@ -178,7 +179,13 @@ class AccessControlService
     public static function resetRole(Role|string $role): bool
     {
         if ($role = static::getStore()->getRole($role)) {
-            return DB::table("permission_role")->where("user_id", $role->id)->delete() >= 0;
+            $rowsUpdated = DB::table("permission_role")->where("user_id", $role->id)->delete() >= 0;
+
+            if($rowsUpdated) {
+                static::getStore()->sync(SyncFlag::OnlyMap);
+            }
+
+            return $rowsUpdated;
         }
 
         return false;
