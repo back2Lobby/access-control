@@ -10,7 +10,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Facades\DB;
 
-
+/**
+ * @property int $permission_id
+ * @property int $role_id
+ * @property bool $forbidden
+ */
 class PermissionRole extends Pivot
 {
     use HasFactory, syncOnEvents;

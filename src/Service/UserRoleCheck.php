@@ -5,35 +5,37 @@ namespace Back2Lobby\AccessControl\Service;
 use Back2Lobby\AccessControl\Exceptions\InvalidRoleException;
 use App\Models\User;
 use Back2Lobby\AccessControl\Models\Role;
+use Back2Lobby\AccessControl\Store\Contracts\Storable;
 use Illuminate\Database\Eloquent\Model;
 use RuntimeException;
 
 class UserRoleCheck
 {
-	public function __construct(private readonly User $user)
+	public function __construct(private readonly Storable $store, private readonly User $user)
 	{
 	}
 
 	/**
 	 * Check if the user have given role on the specified roleable e.g check if user is a manager in given company
+     * - if no roleable is given then it will return `true` if the user has the role for any roleable
 	 *
 	 */
 	public function a(Role|string $role, Model $roleable = null): bool
 	{
-		$roleName = $role instanceof Role ? $role->name : $role;
+		if ($role = $this->store->getRole($role)) {
+            // if roleable is given then make sure the role supports it
+            if(! (is_null($roleable) ||
+                ($roleable->id && is_array($role->roleables) && in_array($roleable,$role->roleables))))
+                return false;
 
-		if (!is_null($roleName)) {
-			$roleQuery = $this->user->roles()->where("name", $roleName);
+			$roleQuery = $this->user->roles()->where("name", $role->name);
 
-			if ($roleable && $roleable->id) {
-				// first make sure the roleable is from the allowed list
-				$roleQuery = $roleQuery->whereJsonContains('roleables', $roleable::class);
+            //now get the role with given roleable if asked
+            if($roleable){
+                $roleQuery = $roleQuery->wherePivot("roleable_type", $roleable::class)->wherePivot("roleable_id", $roleable->id);
+            }
 
-				//now get the role with given roleable
-				$roleQuery = $roleQuery->wherePivot("roleable_type", $roleable::class)->wherePivot("roleable_id", $roleable->id);
-			}
-
-			return $roleQuery->exists();
+            return $roleQuery->exists();
 		} else {
 			throw new InvalidRoleException("Provided role cannot be validated because its either invalid or not found in database");
 		}
@@ -85,7 +87,7 @@ class UserRoleCheck
 	}
 
 	/**
-	 * check if user have atleast one of the given roles
+	 * check if user have at least one of the given roles
 	 *
 	 */
 	public function any(array $roles): bool

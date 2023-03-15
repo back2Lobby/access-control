@@ -8,6 +8,13 @@ use Back2Lobby\AccessControl\Traits\syncOnEvents;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $title
+ * @property string $description
+ * @property array|null $roleables
+ */
 class Permission extends Model
 {
 	use HasFactory, syncOnEvents;

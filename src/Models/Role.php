@@ -13,6 +13,12 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use RuntimeException;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $title
+ * @property array|null $roleables
+ */
 class Role extends Model
 {
 	use HasFactory, syncOnEvents;

@@ -28,11 +28,11 @@ AccessControl::assign('editor')->to($user);
 // You can also assign role for a specific roleable model
 AccessControl::assign('editor')->to('edit',$post);
 
-// checking the permission on user for a roleable model
+// Checking the permission on user for a roleable model
 AccessControl::canUser($user)->do("edit",$post);
 
-// checking a role on user
-AccessControl::is($user)->an("editor"); 
+// Checking if the user has an editor role for that model
+AccessControl::is($user)->an("editor",$post); 
 ```
 
 
@@ -56,13 +56,23 @@ AccessControl::is($user)->an("editor");
     }
     ```
 
-3) Now, to run AccessControl's migrations. First publish the migrations into your app's `migrations` directory, by running the following command:
+3) If you have a roleable model, then add AccessControl's trait to your roleable model:
+
+    ```php
+    use Back2Lobby\AccessControl\Traits\isRoleable;
+    class Post extends Model
+    {
+        use isRoleable;
+    }
+    ```
+
+4) Now, to run AccessControl's migrations. First publish the migrations into your app's `migrations` directory, by running the following command:
 
     ```
     php artisan vendor:publish --tag="access-control.migrations"
     ```
 
-4) Finally, run the migrations:
+5) Finally, run the migrations:
 
     ```
     php artisan migrate
