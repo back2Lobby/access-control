@@ -179,7 +179,7 @@ class AccessControlService
     public static function resetRole(Role|string $role): bool
     {
         if ($role = static::getStore()->getRole($role)) {
-            $rowsUpdated = DB::table("permission_role")->where("user_id", $role->id)->delete() >= 0;
+            $rowsUpdated = DB::table("permission_role")->where("role_id", $role->id)->delete() >= 0;
 
             if($rowsUpdated) {
                 static::getStore()->sync(SyncFlag::OnlyMap);

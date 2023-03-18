@@ -11,6 +11,7 @@ use App\Models\User;
 use Back2Lobby\AccessControl\Models\RoleUser;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Collection;
 
 trait isRoleable
 {
@@ -56,9 +57,9 @@ trait isRoleable
     /**
      * Get all the RoleUser models for this roleable with direct users and roles
      *
-     * @return array List of users with their assigned role names
+     * @return Collection List of users with their assigned role names
      */
-    public function usersWithRoles(): array
+    public function usersWithRoles(): Collection
     {
         return User::select('users.*', 'roles.id as role_id')
             ->join('role_user', 'users.id', '=', 'role_user.user_id')
@@ -72,10 +73,10 @@ trait isRoleable
                 $user = $group->first();
                 $roles = $group->pluck('role_id');
                 $user->roles = $roles->map(fn($r) => AccessControlFacade::getStore()->getRole($r))->filter(fn($r) => ! is_null($r));
+                unset($user->role_id);
                 return $user;
             })
-            ->values()
-            ->all();
+            ->values();
     }
 
     /**

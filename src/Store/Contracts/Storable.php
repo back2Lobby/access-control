@@ -32,6 +32,28 @@ interface Storable
      */
     public function clearCache(): void;
 
+
+    /**
+     * Get all the roles available
+     *
+     * @return Collection
+     */
+    public function getRoles(): Collection;
+
+    /**
+     * Get all the permissions available
+     *
+     * @return Collection
+     */
+    public function getPermissions(): Collection;
+
+    /**
+     * Get all the maps available
+     *
+     * @return Collection
+     */
+    public function getMaps(): Collection;
+
     /**
      * Get role if it exists
      *

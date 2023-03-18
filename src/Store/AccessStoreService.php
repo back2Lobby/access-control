@@ -51,6 +51,21 @@ class AccessStoreService implements Storable
         Cache::forget("access-store");
     }
 
+    public function getRoles(): Collection
+    {
+        return $this->roles;
+    }
+
+    public function getPermissions(): Collection
+    {
+        return $this->permissions;
+    }
+
+    public function getMap(): Collection
+    {
+        return $this->map;
+    }
+
     public function getRole(Role|string|int $role): Role|null
     {
         $key = is_string($role) ? "name" : "id";
