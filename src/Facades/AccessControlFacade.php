@@ -2,8 +2,9 @@
 
 namespace Back2Lobby\AccessControl\Facades;
 
-use App\Models\User;
+use Back2Lobby\AccessControl\Models\Permission;
 use Back2Lobby\AccessControl\Models\Role;
+use Back2Lobby\AccessControl\Models\User;
 use Back2Lobby\AccessControl\Service\AllowPermission;
 use Back2Lobby\AccessControl\Service\AssignRole;
 use Back2Lobby\AccessControl\Service\DisallowPermission;
@@ -12,11 +13,19 @@ use Back2Lobby\AccessControl\Service\RetractRole;
 use Back2Lobby\AccessControl\Service\RolePermissionCheck;
 use Back2Lobby\AccessControl\Service\UserPermissionCheck;
 use Back2Lobby\AccessControl\Service\UserRoleCheck;
-use Back2Lobby\AccessControl\Store\Contracts\Storable;
+use Back2Lobby\AccessControl\Store\Abstracts\Storable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Facade;
 
 /**
+ * @method static Role createRole(array $attributes)
+ * @method static Permission createPermission(array $attributes)
+ * @method static bool createManyRoles(array $roles)
+ * @method static bool createManyPermissions(array $roles)
+ * @method static Role updateRole(Role $role, array $attributes)
+ * @method static Permission updatePermission(Permission $permission, array $attributes)
+ * @method static bool deleteRole(Role|string|int $role)
+ * @method static bool deletePermission(Permission|string|int $permission)
  * @method static AllowPermission allow(Role|string $role)
  * @method static DisallowPermission disallow(Role|string $role)
  * @method static ForbidPermission forbid(Role|string $role)
@@ -29,12 +38,12 @@ use Illuminate\Support\Facades\Facade;
  * @method static bool resetRole(Role|string $role)
  * @method static Storable getStore()
  *
- * @see \Back2Lobby\AccessControl\Service\AccessControlService;
+ * @see \Back2Lobby\AccessControl\Service\AccessService;
  */
 class AccessControlFacade extends Facade
 {
-	protected static function getFacadeAccessor()
-	{
-		return "access-control";
-	}
+    protected static function getFacadeAccessor(): string
+    {
+        return 'access-control';
+    }
 }

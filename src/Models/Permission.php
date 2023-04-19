@@ -2,11 +2,12 @@
 
 namespace Back2Lobby\AccessControl\Models;
 
-use Back2Lobby\AccessControl\Facades\AccessControlFacade;
-use Back2Lobby\AccessControl\Store\Enumerations\SyncFlag;
+use Back2Lobby\AccessControl\Facades\AccessControlFacade as AccessControl;
+use Back2Lobby\AccessControl\Factories\PermissionFactory;
 use Back2Lobby\AccessControl\Traits\syncOnEvents;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 /**
  * @property int $id
@@ -14,13 +15,17 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $title
  * @property string $description
  * @property array|null $roleables
+ *
+ * @method static PermissionFactory factory($count = null, $state = [])
  */
 class Permission extends Model
 {
-	use HasFactory, syncOnEvents;
+    use HasFactory, syncOnEvents;
 
-    public function roles()
-	{
-		return $this->belongsToMany(Role::class)->using(PermissionRole::class);
-	}
+    protected $guarded = [];
+
+    public function roles(): Collection
+    {
+        return AccessControl::getStore()->getAllRolesOf($this);
+    }
 }

@@ -2,48 +2,52 @@
 
 namespace Back2Lobby\AccessControl\Service;
 
+use Back2Lobby\AccessControl\Exceptions\InvalidPermissionException;
 use Back2Lobby\AccessControl\Models\Permission;
 use Back2Lobby\AccessControl\Models\Role;
 use Back2Lobby\AccessControl\Service\Contracts\Disallowable;
-use Back2Lobby\AccessControl\Store\Contracts\Storable;
+use Back2Lobby\AccessControl\Store\Abstracts\Storable;
 use Back2Lobby\AccessControl\Store\Enumerations\SyncFlag;
-use DB;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Log;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class DisallowPermission implements Disallowable
 {
+    public function __construct(private readonly Storable $store, private readonly Role $role)
+    {
+    }
 
-	public function __construct(private readonly Storable $store,private readonly Role $role)
-	{
-	}
+    public function to(Permission|string $permission): bool
+    {
+        if ($permission = $this->store->getPermission($permission)) {
+            try {
+                $query = DB::table('permission_role')->where(['permission_id' => $permission->id, 'role_id' => $this->role->id])->delete();
 
-	public function to(Permission|string $permission): bool
-	{
-        if($permission = $this->store->getPermission($permission)){
-			try {
-				$query = DB::table("permission_role")->where(["permission_id" => $permission->id, "role_id" => $this->role->id])->delete();
-
-                if($query){
+                if ($query) {
                     $this->store->sync(SyncFlag::OnlyMap);
                 }
 
                 return $query;
-			} catch (QueryException $e) {
-				Log::error("Couldn't attach permission $permission->name to the role " . $this->role->name . ": " . $e->getMessage());
-			}
-		}
+            } catch (QueryException $e) {
+                Log::error("Couldn't attach permission $permission->name to the role ".$this->role->name.': '.$e->getMessage());
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Assign super permission '*' to the role which allows it do do anything
-	 *
-	 */
-	public function toDoEverything()
-	{
-		return $this->to("*");
-	}
+    /**
+     * Disallow super permission '*' to the role which disallows it to do anything except allowed specifically
+     *
+     * @throws InvalidPermissionException
+     */
+    public function toDoEverything(): bool
+    {
+        if ($this->store->getPermission('*') === null) {
+            throw new InvalidPermissionException('Permission `*` is not found in the database, make sure you create it first');
+        }
+
+        return $this->to('*');
+    }
 }

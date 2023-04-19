@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Facade;
 
 class AccessStoreFacade extends Facade
 {
-	protected static function getFacadeAccessor()
-	{
-		return "access-store";
-	}
+    protected static function getFacadeAccessor()
+    {
+        return 'access-store';
+    }
 }

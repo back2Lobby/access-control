@@ -6,58 +6,66 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-	/**
-	 * Run the migrations.
-	 */
-	public function up(): void
-	{
-		Schema::create('roles', function (Blueprint $table) {
-			$table->id();
-			$table->string("name");
-			$table->string("title");
-			$table->json("roleables")->nullable();
-			$table->timestamps();
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('roles', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('title');
+            $table->json('roleables')->nullable();
+            $table->timestamps();
 
-			$table->unique(["name"]);
-		});
+            $table->unique(['name']);
+        });
 
         Schema::create('role_user', function (Blueprint $table) {
-            $table->foreignIdFor(\Back2Lobby\AccessControl\Models\Role::class)->constrained();
-            $table->foreignIdFor(\App\Models\User::class)->constrained();
 
-            $table->string("roleable_type")->default("");
-            $table->unsignedBigInteger("roleable_id")->default(0);
+            $table->unsignedBigInteger('role_id');
+            $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
 
-            $table->unique(["role_id", "user_id", "roleable_id", "roleable_type"]);
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+
+            $table->string('roleable_type')->default('');
+            $table->unsignedBigInteger('roleable_id')->default(0);
+
+            $table->unique(['role_id', 'user_id', 'roleable_id', 'roleable_type']);
         });
 
         Schema::create('permissions', function (Blueprint $table) {
             $table->id();
-            $table->string("name");
-            $table->string("title");
-            $table->string("description")->nullable();
+            $table->string('name');
+            $table->string('title');
+            $table->string('description')->nullable();
             $table->timestamps();
 
-            $table->unique(["name"]);
+            $table->unique(['name']);
         });
 
         Schema::create('permission_role', function (Blueprint $table) {
-            $table->foreignIdFor(\Back2Lobby\AccessControl\Models\Role::class)->constrained();
-            $table->foreignIdFor(\Back2Lobby\AccessControl\Models\Permission::class)->constrained();
-            $table->boolean("forbidden")->default(0);
+            $table->unsignedBigInteger('role_id');
+            $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
 
-            $table->unique(["role_id", "permission_id"]);
+            $table->unsignedBigInteger('permission_id');
+            $table->foreign('permission_id')->references('id')->on('permissions')->onDelete('cascade');
+
+            $table->boolean('forbidden')->default(0);
+
+            $table->unique(['role_id', 'permission_id']);
         });
-	}
+    }
 
-	/**
-	 * Reverse the migrations.
-	 */
-	public function down(): void
-	{
-		Schema::dropIfExists('roles');
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('roles');
         Schema::dropIfExists('role_user');
         Schema::dropIfExists('permissions');
         Schema::dropIfExists('permission_role');
-	}
+    }
 };

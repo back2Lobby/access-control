@@ -12,7 +12,7 @@ trait syncOnEvents
 {
     protected static function booted(): void
     {
-        $flag = match(static::class) {
+        $flag = match (static::class) {
             Role::class => SyncFlag::OnlyRole,
             Permission::class => SyncFlag::OnlyPermission,
             PermissionRole::class => SyncFlag::OnlyMap,
@@ -21,11 +21,11 @@ trait syncOnEvents
 
         // sync roles and permissions again on these events
         $events = [
-            'saved', 'created', 'updated', 'deleted'
+            'saved', 'created', 'updated', 'deleted',
         ];
 
         foreach ($events as $event) {
-            static::{$event}(function (Role $role) use($flag){
+            static::{$event}(function ($model) use ($flag) {
                 AccessControlFacade::getStore()->sync($flag);
             });
         }
