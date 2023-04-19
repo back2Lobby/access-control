@@ -20,22 +20,33 @@
         "illuminate/cache": "^9.0|^10.0",
         "illuminate/collections": "^9.0|^10.0",
         "illuminate/auth": "^9.0|^10.0",
-        "illuminate/database": "^9.0|^10.0",
-        "illuminate/container": "^9.0|^10.0"
+        "illuminate/support": "^9.0|^10.0",
+        "illuminate/validation": "^9.0|^10.0",
+        "illuminate/container": "^9.0|^10.0",
+        "illuminate/contracts": "^9.0|^10.0",
+        "illuminate/database": "^9.0|^10.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^8.0",
+        "laravel/pint": "^1.8"
     },
     "autoload": {
         "psr-4": {
             "Back2Lobby\\AccessControl\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Back2Lobby\\AccessControl\\Tests\\": "tests/"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [
-                "Back2Lobby\\AccessControl\\AccessServiceProvider"
+                "Back2Lobby\\AccessControl\\AccessControlServiceProvider"
             ],
             "aliases": {
-                "AccessControl": "Back2Lobby\\AccessControl\\Facades\\AccessControlFacade",
-                "AccessStore": "Back2Lobby\\AccessControl\\Facades\\AccessStoreFacade"
+                "AccessControl": "Back2Lobby\\AccessControl\\Facades\\AccessControlFacade"
             }
         }
     }

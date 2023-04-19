@@ -2,27 +2,24 @@
 
 namespace Back2Lobby\AccessControl\Service;
 
-use App\Models\User;
 use Back2Lobby\AccessControl\Models\Permission;
 use Back2Lobby\AccessControl\Models\Role;
-use Back2Lobby\AccessControl\Store\Contracts\Storable;
-use DB;
-use Illuminate\Database\Eloquent\Model;
+use Back2Lobby\AccessControl\Store\Abstracts\Storable;
 
 class RolePermissionCheck
 {
-	public function __construct(private readonly Storable $store, private readonly Role $role)
-	{}
+    public function __construct(private readonly Storable $store, private readonly Role $role)
+    {
+    }
 
-	/**
-	 * Check if role have a specific permission
-	 *
-	 */
+    /**
+     * Check if role have a specific permission either directly or indirectly
+     */
     public function do(Permission|string $permission): bool
     {
-        if($permission = $this->store->getPermission($permission)){
+        if ($permission = $this->store->getPermission($permission)) {
             return $this->store->canRoleDo($this->role, $permission);
-        }else{
+        } else {
             return false;
         }
     }

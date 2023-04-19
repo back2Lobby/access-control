@@ -6,10 +6,9 @@ use Back2Lobby\AccessControl\Models\Permission;
 
 interface Allowable
 {
-	/**
-	 * Specify the permission that will be allowed to the role
-	 * - returns `true` if permission was allowed successfully
-	 *
-	 */
-	public function to(Permission|string $permission): bool;
+    /**
+     * Specify the permission that will be allowed to the role
+     * - returns `true` if permission was allowed successfully
+     */
+    public function to(Permission|string $permission): bool;
 }
