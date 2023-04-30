@@ -194,7 +194,7 @@ A role is an indirect role for a permission, if it is not allowed for the permis
 
 #### Creating Role
 
-Role can be created using [`createRole`](# "createRole(array $attributes): Role") method provided by AccessControl facade. Example:
+Role can be created using <i title="createRole(array $attributes): Role">`createRole`</i> method. Example:
 
 ```php
 $superAdmin = AccessControl::createRole([
@@ -230,7 +230,7 @@ AccessControl::createManyRole([
 
 #### Updating Role
 
-Role can be updated using [`updateRole`](# "updateRole(Role|int|string $role, array $attributes): Role") method provided by AccessControl facade.
+Role can be updated using <i title="updateRole(Role|int|string $role, array $attributes): Role">`updateRole`</i> method.
 Example:
 
 ```php
@@ -243,7 +243,7 @@ AccessControl::updateRole('author',[
 
 #### Deleting Role
 
-Role can be deleted using [`deleteRole`](# "deleteRole(Role|string|int $role): bool") method provided by AccessControl facade.
+Role can be deleted using <i title="deleteRole(Role|string|int $role): bool">`deleteRole`</i> method.
 Example:
 
 ```php
@@ -252,7 +252,7 @@ AccessControl::deleteRole('author');
 
 #### Getting Role
 
-To retrieve a role, you can use the method [`getRole`](# "getRole(Role|string|int $role): Role|null"). Example:
+To retrieve a role, you can use the method <i title="getRole(Role|string|int $role): Role|null">`getRole`</i>. Example:
 
 ```php
 AccessControl::getRole('admin');
@@ -266,7 +266,7 @@ AccessControl::getAllRoles();
 
 #### Allowing Permissions
 
-To allow a role for a specific permission, you can use the method [`allow`](# "allow(Role|string $role): AllowPermission") and then chain it with method [`to`](# "to(Permission|string $permission): bool"). Example:
+To allow a role for a specific permission, you can use the method <i title="allow(Role|string $role): AllowPermission">`allow`</i> and then chain it with method <i title="to(Permission|string $permission): bool">`to`</i>. Example:
 
 ```php
 AccessControl::allow('author')->to('edit'); // with permission name
@@ -276,7 +276,7 @@ AccessControl::allow('author')->to('edit'); // with permission object
 AccessControl::allow('author')->to('edit'); // with permission id
 ```
 
-Alternatively, we can use [`allow`](# "allow(Permission $permission): bool") from Role Model itself like:
+Alternatively, we can use <i title="allow(Permission $permission): bool">`allow`</i> from Role Model itself like:
 
 ```php
 $role->allow('create-post');
@@ -292,13 +292,13 @@ The method `superPermission` needs the permission named `*`. It will create it i
 
 #### Disallowing Permissions
 
-Take back a permission from a user with method [`disallow`](# "disallow(Role|string $role): DisallowPermission") and chain it with method [`to`](# "to(Permission|string $permission): bool"). Example:
+Take back a permission from a user with method <i title="disallow(Role|string $role): DisallowPermission">`disallow`</i> and chain it with method <i title="to(Permission|string $permission): bool">`to`</i>. Example:
 
 ```php
 AccessControl::disallow('admin')->to('create admin');
 ```
 
-Alternatively, we can use [`disallow`](# "disallow(Permission $permission): bool") from Role Model itself like:
+Alternatively, we can use <i title="disallow(Permission $permission): bool">`disallow`</i> from Role Model itself like:
 
 ```php
 $role->disallow('create-post');
@@ -312,13 +312,13 @@ AccessControl::disallow('manager')->superPermission();
 
 #### Forbidding Permissions
 
-Forbid a permission for the role using method [`forbid`](# "forbid(Role|string $role): ForbidPermission") and chain it with method [`to`](# "to(Permission|string $permission): bool"). Example:
+Forbid a permission for the role using method <i title="forbid(Role|string $role): ForbidPermission">`forbid`</i> and chain it with method <i title="to(Permission|string $permission): bool">`to`</i>. Example:
 
 ```php
 AccessControl::forbid('manager')->to('delete company');
 ```
 
-Alternatively, we can use [`forbid`](# "forbid(Permission $permission): bool") from Role Model itself like:
+Alternatively, we can use <i title="forbid(Permission $permission): bool">`forbid`</i> from Role Model itself like:
 
 ```php
 $role->forbid('create-post');
@@ -332,13 +332,13 @@ AccessControl::forbid('manager')->superPermission();
 
 #### Getting Permissions For Role
 
-To get all the permissions a role have including allowed and forbidden, we can use method [`getAllPermissionsOf`](# "getAllPermissionsOf(Role $role): Collection") like:
+To get all the permissions a role have including allowed and forbidden, we can use method <i title="getAllPermissionsOf(Role $role): Collection">`getAllPermissionsOf`</i> like:
 
 ```php
 $permissions = AccessControl::getAllPermissionsOf('manager');
 ```
 
-To get only specific type of permissions for the role, we can use methods [`getAllowedPermissionsOf`](# "getAllowedPermissionsOf(Role $role): Collection"), [`getDirectlyAllowedPermissionsOf`](# "getDirectlyAllowedPermissionsOf(Role $role): Collection"), [`getIndirectlyAllowedPermissionsOf`](# "getIndirectlyAllowedPermissionsOf(Role $role): Collection"), [`getForbiddenPermissionsOf`](# "getForbiddenPermissionsOf(Role $role): Collection"), [`getDirectlyForbiddenPermissionsOf`](# "getDirectlyForbiddenPermissionsOf(Role $role): Collection"), [`getIndirectlyForbiddenPermissionsOf`](# "getIndirectlyForbiddenPermissionsOf(Role $role): Collection"). Examples:
+To get only specific type of permissions for the role, we can use methods <i title="getAllowedPermissionsOf(Role $role): Collection">`getAllowedPermissionsOf`</i>, <i title="getDirectlyAllowedPermissionsOf(Role $role): Collection">`getDirectlyAllowedPermissionsOf`</i>, <i title="getIndirectlyAllowedPermissionsOf(Role $role): Collection">`getIndirectlyAllowedPermissionsOf`</i>, <i title="getForbiddenPermissionsOf(Role $role): Collection">`getForbiddenPermissionsOf`</i>, <i title="getDirectlyForbiddenPermissionsOf(Role $role): Collection">`getDirectlyForbiddenPermissionsOf`</i>, <i title="getIndirectlyForbiddenPermissionsOf(Role $role): Collection">`getIndirectlyForbiddenPermissionsOf`</i>. Examples:
 
 ```php
  // getting allowed permissions
@@ -360,7 +360,7 @@ Read [Terminologies](#terminologies) if you don't know about direct/indirect per
 
 #### Assigning Role
 
-Role can be assigned to any user using method [`assign`](# "assign(Role|string $role, ?Model $roleable = null): AssignRole") provided by AccessControl facade and chain it with [`to`](# "to(User|int $user): bool") method. Alternatively, you can use the [`assign`](# "assign(Role|string $role, Model $roleable = null): bool") method that's available method on the User model itself. Example:
+Role can be assigned to any user using method <i title="assign(Role|string $role, ?Model $roleable = null): AssignRole">`assign`</i>  and chain it with <i title="to(User|int $user): bool">`to`</i> method. Alternatively, you can use the <i title="assign(Role|string $role, Model $roleable = null): bool">`assign`</i> method that's available method on the User model itself. Example:
 
 ```php
 AccessControl::assign('admin')->to($user); // using facade
@@ -378,7 +378,7 @@ $user->assign('manager',$project); // using user model
 
 #### Retracting Role
 
-Assigned role can be retracted from any user using method [`retract`](# "retract(Role|string $role, ?Model $roleable = null): RetractRole") provided by AccessControl facade and chain it with [`from`](# "from(User|int $user): bool") method. Example:
+Assigned role can be retracted from any user using method <i title="retract(Role|string $role, ?Model $roleable = null): RetractRole">`retract`</i> and chain it with <i title="from(User|int $user): bool">`from`</i> method. Example:
 
 ```php
 AccessControl::retract('admin')->from($user);
@@ -392,7 +392,7 @@ AccessControl::retract('manager',$company)->from($user);
 
 #### Checking Role
 
-To check if a user have a specific role use method [`is`](# "is(User $user): UserRoleCheck") and chain it with [`a`](# "a(Role|string $role, Model $roleable = null): bool") or [`an`](# "a(Role|string $role, Model $roleable = null): bool") methods. Example:
+To check if a user have a specific role use method <i title="is(User $user): UserRoleCheck">`is`</i> and chain it with <i title="a(Role|string $role, Model $roleable = null): bool">`a`</i> or <i title="a(Role|string $role, Model $roleable = null): bool">`an`</i> methods. Example:
 
 ```php
 AccessControl::is($user)->a('manager',$company);
@@ -400,7 +400,7 @@ AccessControl::is($user)->a('manager',$company);
 AccessControl::is($user)->an('admin');
 ```
 
-To check if a user have a specific role chain it with [`notA`](# "notA(Role|string $role, Model $roleable = null): bool") or [`notAn`](# "notA(Role|string $role, Model $roleable = null): bool") methods. Example:
+To check if a user have a specific role chain it with <i title="notA(Role|string $role, Model $roleable = null): bool">`notA`</i> or <i title="notA(Role|string $role, Model $roleable = null): bool">`notAn`</i> methods. Example:
 
 ```php
 AccessControl::is($user)->notA('manager',$company);
@@ -436,7 +436,7 @@ AccessControl::is($user)->any([
 
 #### Resetting Role
 
-To remove all the permissions from a role, we can reset it using the method [`resetRole`](# "resetRole(Role|string $role): bool") provided by AccessControl Facade. Example:
+To remove all the permissions from a role, we can reset it using the method <i title="resetRole(Role|string $role): bool">`resetRole`</i> method. Example:
 
 ```php
 AccessControl::resetRole('admin');
@@ -446,7 +446,7 @@ AccessControl::resetRole('admin');
 
 #### Creating Permission
 
-Permission can be created using the method [`createPermission`](# "createPermission(array $attributes): Permission") provided by AccessControl facade. Example:
+Permission can be created using the method <i title="createPermission(array $attributes): Permission">`createPermission`</i> method. Example:
 
 ```php
 AccessControl::createPermission([
@@ -455,7 +455,7 @@ AccessControl::createPermission([
 ]);
 ```
 
-Multiple permissions can be created at once using the method [`createManyPermissions`](# "createManyPermissions(array $permissions): bool") like this:
+Multiple permissions can be created at once using the method <i title="createManyPermissions(array $permissions): bool">`createManyPermissions`</i> like this:
 
 ```php
 AccessControl::createManyPermissions([
@@ -467,7 +467,7 @@ AccessControl::createManyPermissions([
 
 #### Updating Permission
 
-Permission can be updated using the method [`updatePermission`](# "updatePermission(Permission|int|string $permission, array $attributes): Permission"). For example, to change a permission's name from remove-post to delete-post we can do something like:
+Permission can be updated using the method <i title="updatePermission(Permission|int|string $permission, array $attributes): Permission">`updatePermission`</i>. For example, to change a permission's name from remove-post to delete-post we can do something like:
 
 ```php
 AccessControl::updatePermission('remove-post',[
@@ -478,7 +478,7 @@ AccessControl::updatePermission('remove-post',[
 
 #### Deleting Permission
 
-To delete a permission we can use the method [`deletePermission`](# "deletePermission(Permission|string|int $permission): bool") like:
+To delete a permission we can use the method <i title="deletePermission(Permission|string|int $permission): bool">`deletePermission`</i> like:
 
 ```php
 AccessControl::deletePermission('edit-post');
@@ -486,26 +486,26 @@ AccessControl::deletePermission('edit-post');
 
 #### Getting Permission
 
-To retrieve a permission we can use the method [`getPermission`](# "getPermission(Permission|string|int $permission): Permission|null") like:
+To retrieve a permission we can use the method <i title="getPermission(Permission|string|int $permission): Permission|null">`getPermission`</i> like:
 
 ```php
 AccessControl::getPermission('delete-company');
 ```
 
-To retrieve all the permissions available, use the method [`getPermissions`](# "getPermissions(): Collection"). Example:
+To retrieve all the permissions available, use the method <i title="getPermissions(): Collection">`getPermissions`</i>. Example:
 ```php
 AccessControl::getPermissions();
 ```
 
 #### Getting Roles Having Permission
 
-To get all the roles that have a permission, we can use method [`getAllRolesOf`](# "getAllRolesOf(Permission $permission): Collection") like:
+To get all the roles that have a permission, we can use method <i title="getAllRolesOf(Permission $permission): Collection">`getAllRolesOf`</i> like:
 
 ```php
 $rolesWhoCanEdit = AccessControl::getAllRolesOf('edit-post');
 ```
 
-To get only specific type of roles for the permission, we can use methods [`getAllowedRolesOf`](# "getAllowedRolesOf(Permission $permission): Collection"), [`getDirectlyAllowedRolesOf`](# "getDirectlyAllowedRolesOf(Permission $permission): Collection"), [`getIndirectlyAllowedRolesOf`](# "getIndirectlyAllowedRolesOf(Permission $permission): Collection"), [`getForbiddenRolesOf`](# "getForbiddenRolesOf(Permission $permission): Collection"), [`getDirectlyForbiddenRolesOf`](# "getDirectlyForbiddenRolesOf(Permission $permission): Collection"), [`getIndirectlyForbiddenRolesOf`](# "getIndirectlyForbiddenRolesOf(Permission $permission): Collection"). Examples:
+To get only specific type of roles for the permission, we can use methods <i title="getAllowedRolesOf(Permission $permission): Collection">`getAllowedRolesOf`</i>, <i title="getDirectlyAllowedRolesOf(Permission $permission): Collection">`getDirectlyAllowedRolesOf`</i>, <i title="getIndirectlyAllowedRolesOf(Permission $permission): Collection">`getIndirectlyAllowedRolesOf`</i>, <i title="getForbiddenRolesOf(Permission $permission): Collection">`getForbiddenRolesOf`</i>, <i title="getDirectlyForbiddenRolesOf(Permission $permission): Collection">`getDirectlyForbiddenRolesOf`</i>, <i title="getIndirectlyForbiddenRolesOf(Permission $permission): Collection">`getIndirectlyForbiddenRolesOf`</i>. Examples:
 
 ```php
 // getting allowed roles
@@ -529,7 +529,7 @@ Read [Terminologies](#terminologies) if you don't know about direct/indirect rol
 
 #### Getting User Roles
 
-To get all the roles assigned to a user, we can use the method [`roles`](# "roles(): BelongsToMany") provided by `Back2Lobby\AccessControl\Models\User`. Example:
+To get all the roles assigned to a user, we can use the method <i title="roles(): BelongsToMany">`roles`</i> provided by `Back2Lobby\AccessControl\Models\User`. Example:
 
 ```php
 $roles = $user->roles()->get();
@@ -537,7 +537,7 @@ $roles = $user->roles()->get();
 
 #### Getting User Permissions
 
-To get all the permissions allowed for user through various roles, we can use the method [`permissions`](# "permissions(): Collection") provided by `Back2Lobby\AccessControl\Models\User`. Example:
+To get all the permissions allowed for user through various roles, we can use the method <i title="permissions(): Collection">`permissions`</i> provided by `Back2Lobby\AccessControl\Models\User`. Example:
 
 ```php
 $roles = $user->permissions();
@@ -545,7 +545,7 @@ $roles = $user->permissions();
 
 #### Getting Users With Specific Role
 
-To get all the users that have a specific role, we can use the static method [`whereIs`](# "whereIs(Role|string $role, Model $roleable = null): Builder") provided by `Back2Lobby\AccessControl\Models\User`. Example:
+To get all the users that have a specific role, we can use the static method <i title="whereIs(Role|string $role, Model $roleable = null): Builder">`whereIs`</i> provided by `Back2Lobby\AccessControl\Models\User`. Example:
 
 ```php
 $admins = User::whereIs('admin')->get();
@@ -557,7 +557,7 @@ If the target role is restricted to some roleables, we can do something like:
 $players = User::whereIs('player',$team)->get();
 ```
 
-You can also reverse the logic by using [`users`](# "users(Model $roleable = null): Builder") method from the role model instead:
+You can also reverse the logic by using <i title="users(Model $roleable = null): Builder">`users`</i> method from the role model instead:
 
 ```php
 $admins = $adminRole->users()->get();
@@ -565,7 +565,7 @@ $admins = $adminRole->users()->get();
 
 #### Getting Users With Specific Permission
 
-To get all the users that have a specific permission, we can use the static method [`whereHas`](# "whereCan(Permission|string $permission, Model $roleable = null, bool $includeIndirectRoles = false): \\Illuminate\Database\Eloquent\Builder") provided by `Back2Lobby\AccessControl\Models\User`. Example:
+To get all the users that have a specific permission, we can use the static method <i title="whereCan(Permission|string $permission, Model $roleable = null, bool $includeIndirectRoles = false): \\Illuminate\Database\Eloquent\Builder">`whereHas`</i> provided by `Back2Lobby\AccessControl\Models\User`. Example:
 
 ```php
 $users = User::whereHas('edit-post',$post)->get();
@@ -573,7 +573,7 @@ $users = User::whereHas('edit-post',$post)->get();
 
 #### Checking User Permission
 
-To check if a user have specific permission from any role, we can use the method [`canUser`](# "canUser(User $user): UserPermissionCheck") and chain it with method [`do`](# "do(Permission|string $permission, Model $roleable = null): bool") like this:
+To check if a user have specific permission from any role, we can use the method <i title="canUser(User $user): UserPermissionCheck">`canUser`</i> and chain it with method <i title="do(Permission|string $permission, Model $roleable = null): bool">`do`</i> like this:
 
 ```php
 $canCreatePost = AccessControl::canUser($user)->do('create-post');
@@ -587,7 +587,7 @@ $canEditPost = AccessControl::canUser($user)->do('edit-post',$post);
 
 #### Resetting User
 
-To remove all the roles from a user, we can use the method [`resetUser`](# "resetUser(User $user): bool"). Example:
+To remove all the roles from a user, we can use the method <i title="resetUser(User $user): bool">`resetUser`</i>. Example:
 
 ```php
 AccessControl::resetUser($user);
@@ -599,25 +599,25 @@ AccessControl::resetUser($user);
 
 All roles and permissions are cached and refreshed automatically every 24 hours. This optimization improves performance and reduces unnecessary database queries. Note that user data is not cached as it can frequently change.
 
-You can manually sync all the roles and permissions with database with [`sync`](# "sync(SyncFlag $flag = SyncFlag::SyncAll): void") method. For example:
+You can manually sync all the roles and permissions with database with <i title="sync(SyncFlag $flag = SyncFlag::SyncAll): void">`sync`</i> method. For example:
 
 ```php
 AccessControl::sync();
 ```
 
-To clear the cache you can use the method [`clearCache`](# "clearCache(): void") like:
+To clear the cache you can use the method <i title="clearCache(): void">`clearCache`</i> like:
 
 ```php
 AccessControl::clearCache();
 ```
 
-Even after clearing cache the local store will still have the roles and permissions, you can remove them also using the method [`reset`](# "reset(): void"): Example:
+Even after clearing cache the local store will still have the roles and permissions, you can remove them also using the method <i title="reset(): void">`reset`</i>: Example:
 
 ```php
 AccessControl::reset();
 ```
 
-Manually caching the store can be achieved using [`cache`](# "cache(): void") like:
+Manually caching the store can be achieved using <i title="cache(): void">`cache`</i> like:
 
 ```php
 AccessControl::cache();
