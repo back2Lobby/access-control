@@ -79,13 +79,13 @@ AccessControl::is($user)->a("manager",$company);
    composer require back2lobby/access-control
    ```
 
-2. Add AccessControl's trait to your user model:
+2. Extend User model the model provided by AccessControl:
 
    ```php
-   use Back2Lobby\AccessControl\Traits\hasRolesAndPermissions;
-   class User extends Model
+   use Back2Lobby\AccessControl\Models\User as AccessControlUser;
+   class User extends AccessControlUser;
    {
-       use hasRolesAndPermissions;
+       // code
    }
    ```
 
