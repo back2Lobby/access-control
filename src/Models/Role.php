@@ -46,7 +46,7 @@ class Role extends Model
 
     public function permissions(): Collection
     {
-        return AccessControl::getStore()->getAllPermissionsOf($this);
+        return AccessControl::getAllowedPermissionsOf($this);
     }
 
     public function users(Model $roleable = null): Builder

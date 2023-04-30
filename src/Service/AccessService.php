@@ -88,7 +88,7 @@ class AccessService implements Accessable
         return $result;
     }
 
-    public function updateRole(Role $role, array $attributes): Role
+    public function updateRole(Role|int|string $role, array $attributes): Role
     {
         if ($role = $this->getStore()->getRole($role)) {
             $validator = Validator::make($attributes, [
@@ -167,7 +167,7 @@ class AccessService implements Accessable
         return $result;
     }
 
-    public function updatePermission(Permission $permission, array $attributes): Permission
+    public function updatePermission(Permission|int|string $permission, array $attributes): Permission
     {
         if ($permission = $this->getStore()->getPermission($permission)) {
             $validator = Validator::make($attributes, [

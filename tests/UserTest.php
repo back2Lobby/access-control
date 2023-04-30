@@ -35,8 +35,8 @@ class UserTest extends BaseTestCase
         AccessControl::assign($role2, Company::factory()->create())->to($user);
         AccessControl::assign($role3, Post::factory()->create())->to($user);
 
-        $this->assertEquals(3, AccessControl::getStore()->getRoles()->count());
-        $userRoles = $user->roles()->get()->pluck('id');
+        $this->assertEquals(3, AccessControl::getRoles()->count());
+        $userRoles = $user->roles()->pluck('id');
 
         $this->assertInstanceOf(Collection::class, $userRoles);
 
@@ -141,7 +141,7 @@ class UserTest extends BaseTestCase
 
         $user->assign($role, $roleable);
 
-        $this->assertCount(1, AccessControl::getStore()->getRoles());
+        $this->assertCount(1, AccessControl::getRoles());
         $this->assertTrue(User::whereIs($role, $roleable)->exists());
     }
 

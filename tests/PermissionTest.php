@@ -31,7 +31,7 @@ class PermissionTest extends BaseTestCase
     {
         $permission = Permission::factory()->createFake();
 
-        $permissions = AccessControl::getStore()->getPermissions();
+        $permissions = AccessControl::getPermissions();
 
         $this->assertCount(1, $permissions);
         $this->assertIsInt($permission->id);
@@ -43,14 +43,14 @@ class PermissionTest extends BaseTestCase
     {
         $permission = Permission::factory()->createFake();
 
-        $permissions = AccessControl::getStore()->getPermissions();
+        $permissions = AccessControl::getPermissions();
 
         $this->assertCount(1, $permissions);
 
         // now deleting
         $permission->delete();
 
-        $permissions = AccessControl::getStore()->getPermissions();
+        $permissions = AccessControl::getPermissions();
         $this->assertCount(0, $permissions);
     }
 
@@ -64,7 +64,7 @@ class PermissionTest extends BaseTestCase
 
         $permission->save();
 
-        $permissions = AccessControl::getStore()->getPermissions();
+        $permissions = AccessControl::getPermissions();
 
         $this->assertCount(1, $permissions);
         $this->assertIsInt($permission->id);
@@ -77,7 +77,7 @@ class PermissionTest extends BaseTestCase
     {
         $permission = Permission::factory()->createFake();
 
-        $permissions = AccessControl::getStore()->getPermissions();
+        $permissions = AccessControl::getPermissions();
 
         $this->assertCount(1, $permissions);
 
@@ -86,7 +86,7 @@ class PermissionTest extends BaseTestCase
             'title' => 'Test Title',
         ]);
 
-        $permissions = AccessControl::getStore()->getPermissions();
+        $permissions = AccessControl::getPermissions();
 
         $this->assertCount(1, $permissions);
         $this->assertIsInt($permission->id);
@@ -100,7 +100,7 @@ class PermissionTest extends BaseTestCase
         $permission = Permission::factory()->createFake();
 
         // make sure it doesn't have any roles yet
-        $this->assertEquals(0, AccessControl::getStore()->getAllRolesOf($permission)->count());
+        $this->assertEquals(0, AccessControl::getAllRolesOf($permission)->count());
 
         $role1 = Role::factory()->createFake();
         $role2 = Role::factory()->createFake();
@@ -110,7 +110,7 @@ class PermissionTest extends BaseTestCase
         AccessControl::allow($role2)->to($permission);
         AccessControl::allow($role3)->to($permission);
 
-        $this->assertCount(3, AccessControl::getStore()->getAllRolesOf($permission));
+        $this->assertCount(3, AccessControl::getAllRolesOf($permission));
     }
 
     /**

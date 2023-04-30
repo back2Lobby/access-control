@@ -26,7 +26,7 @@ trait syncOnEvents
 
         foreach ($events as $event) {
             static::{$event}(function ($model) use ($flag) {
-                AccessControlFacade::getStore()->sync($flag);
+                AccessControlFacade::sync($flag);
             });
         }
 

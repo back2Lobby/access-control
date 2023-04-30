@@ -2,7 +2,7 @@
 
 namespace Back2Lobby\AccessControl\Service;
 
-use Back2Lobby\AccessControl\Exceptions\InvalidPermissionException;
+use Back2Lobby\AccessControl\Facades\AccessControlFacade;
 use Back2Lobby\AccessControl\Models\Permission;
 use Back2Lobby\AccessControl\Models\Role;
 use Back2Lobby\AccessControl\Service\Contracts\Forbiddable;
@@ -39,13 +39,14 @@ class ForbidPermission implements Forbiddable
 
     /**
      * Forbid super permission '*' to the role which forbids it to do anything except specifically allowed
-     *
-     * @throws InvalidPermissionException
      */
-    public function toDoEverything(): bool
+    public function superPermission(): bool
     {
         if ($this->store->getPermission('*') === null) {
-            throw new InvalidPermissionException('Permission `*` is not found in the database, make sure you create it first');
+            AccessControlFacade::createPermission([
+                'name' => '*',
+                'title' => 'Super Permission',
+            ]);
         }
 
         return $this->to('*');

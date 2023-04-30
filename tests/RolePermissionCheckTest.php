@@ -89,7 +89,7 @@ class RolePermissionCheckTest extends BaseTestCase
         $permission3 = Permission::factory()->createFake();
 
         AccessControl::allow($role)->to($permission2);
-        AccessControl::forbid($role)->toDoEverything();
+        AccessControl::forbid($role)->superPermission();
 
         $this->assertFalse(AccessControl::canRole($role)->do($permission1));
         $this->assertTrue(AccessControl::canRole($role)->do($permission2));

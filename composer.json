@@ -49,5 +49,9 @@
                 "AccessControl": "Back2Lobby\\AccessControl\\Facades\\AccessControlFacade"
             }
         }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "format": "pint"
     }
 }

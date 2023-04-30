@@ -7,6 +7,7 @@ use Back2Lobby\AccessControl\Models\Role;
 use Back2Lobby\AccessControl\Store\Enumerations\SyncFlag;
 use Back2Lobby\AccessControl\Store\StoreService;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 abstract class Storable
 {
@@ -18,13 +19,7 @@ abstract class Storable
 
     public static function getInstance(): StoreService
     {
-        if (! isset(self::$store)) {
-            self::$store = new static;
-
-            self::$store->sync();
-        }
-
-        return self::$store;
+        return self::$store ??= Cache::get('access-store') ?? tap(new static, fn ($store) => $store->sync());
     }
 
     private function __clone()

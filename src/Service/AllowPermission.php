@@ -2,7 +2,7 @@
 
 namespace Back2Lobby\AccessControl\Service;
 
-use Back2Lobby\AccessControl\Exceptions\InvalidPermissionException;
+use Back2Lobby\AccessControl\Facades\AccessControlFacade;
 use Back2Lobby\AccessControl\Models\Permission;
 use Back2Lobby\AccessControl\Models\Role;
 use Back2Lobby\AccessControl\Service\Contracts\Allowable;
@@ -38,14 +38,15 @@ class AllowPermission implements Allowable
     }
 
     /**
-     * Assign super permission '*' to the role which allows it do do anything
-     *
-     * @throws InvalidPermissionException
+     * Assign super permission '*' to the role which allows it to do anything
      */
-    public function toDoEverything(): bool
+    public function superPermission(): bool
     {
         if ($this->store->getPermission('*') === null) {
-            throw new InvalidPermissionException('Permission `*` is not found in the database, make sure you create it first');
+            AccessControlFacade::createPermission([
+                'name' => '*',
+                'title' => 'Super Permission',
+            ]);
         }
 
         return $this->to('*');

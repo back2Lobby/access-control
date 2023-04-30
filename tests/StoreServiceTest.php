@@ -35,13 +35,13 @@ class StoreServiceTest extends BaseTestCase
             ['name' => 'manager', 'title' => 'Manager'],
         ]);
 
-        $this->assertCount(2, AccessControl::getStore()->getRoles());
+        $this->assertCount(2, AccessControl::getRoles());
         $this->assertCount(2, StoreService::getInstance()->getRoles());
 
-        AccessControl::getStore()->clearCache();
-        AccessControl::getStore()->reset();
+        AccessControl::clearCache();
+        AccessControl::reset();
 
-        $this->assertCount(0, AccessControl::getStore()->getRoles());
+        $this->assertCount(0, AccessControl::getRoles());
         $this->assertCount(0, StoreService::getInstance()->getRoles());
 
         $this->assertNull(Cache::get('access-store'));
@@ -301,8 +301,8 @@ class StoreServiceTest extends BaseTestCase
             ['name' => 'delete-company', 'title' => 'Delete Company'],
         ]);
 
-        AccessControl::allow('admin')->toDoEverything();
-        AccessControl::allow('manager')->toDoEverything();
+        AccessControl::allow('admin')->superPermission();
+        AccessControl::allow('manager')->superPermission();
         AccessControl::forbid('manager')->to('delete-company');
         AccessControl::allow('user')->to('view-company');
 
@@ -331,8 +331,8 @@ class StoreServiceTest extends BaseTestCase
             ['name' => 'delete-company', 'title' => 'Delete Company'],
         ]);
 
-        AccessControl::allow('admin')->toDoEverything();
-        AccessControl::allow('manager')->toDoEverything();
+        AccessControl::allow('admin')->superPermission();
+        AccessControl::allow('manager')->superPermission();
         AccessControl::forbid('manager')->to('delete-company');
         AccessControl::allow('user')->to('view-company');
 
@@ -365,8 +365,8 @@ class StoreServiceTest extends BaseTestCase
             ['name' => 'delete-company', 'title' => 'Delete Company'],
         ]);
 
-        AccessControl::allow('admin')->toDoEverything();
-        AccessControl::allow('manager')->toDoEverything();
+        AccessControl::allow('admin')->superPermission();
+        AccessControl::allow('manager')->superPermission();
         AccessControl::forbid('manager')->to('delete-company');
         AccessControl::allow('user')->to('view-company');
 
@@ -399,8 +399,8 @@ class StoreServiceTest extends BaseTestCase
             ['name' => 'delete-company', 'title' => 'Delete Company'],
         ]);
 
-        AccessControl::allow('admin')->toDoEverything();
-        AccessControl::allow('manager')->toDoEverything();
+        AccessControl::allow('admin')->superPermission();
+        AccessControl::allow('manager')->superPermission();
         AccessControl::forbid('manager')->to('delete-company');
         AccessControl::allow('user')->to('view-company');
 
@@ -433,10 +433,10 @@ class StoreServiceTest extends BaseTestCase
             ['name' => 'delete-company', 'title' => 'Delete Company'],
         ]);
 
-        AccessControl::allow('admin')->toDoEverything();
-        AccessControl::allow('manager')->toDoEverything();
+        AccessControl::allow('admin')->superPermission();
+        AccessControl::allow('manager')->superPermission();
         AccessControl::forbid('manager')->to('delete-company');
-        AccessControl::forbid('user')->toDoEverything();
+        AccessControl::forbid('user')->superPermission();
         AccessControl::allow('user')->to('view-company');
 
         $this->assertCount(4, $this->store->getAllPermissionsOf($this->store->getRole('admin')));
@@ -468,10 +468,10 @@ class StoreServiceTest extends BaseTestCase
             ['name' => 'delete-company', 'title' => 'Delete Company'],
         ]);
 
-        AccessControl::allow('admin')->toDoEverything();
-        AccessControl::allow('manager')->toDoEverything();
+        AccessControl::allow('admin')->superPermission();
+        AccessControl::allow('manager')->superPermission();
         AccessControl::forbid('manager')->to('delete-company');
-        AccessControl::forbid('user')->toDoEverything();
+        AccessControl::forbid('user')->superPermission();
         AccessControl::allow('user')->to('view-company');
 
         $this->assertCount(0, $this->store->getForbiddenPermissionsOf($this->store->getRole('admin')));
@@ -503,10 +503,10 @@ class StoreServiceTest extends BaseTestCase
             ['name' => 'delete-company', 'title' => 'Delete Company'],
         ]);
 
-        AccessControl::allow('admin')->toDoEverything();
-        AccessControl::allow('manager')->toDoEverything();
+        AccessControl::allow('admin')->superPermission();
+        AccessControl::allow('manager')->superPermission();
         AccessControl::forbid('manager')->to('delete-company');
-        AccessControl::forbid('user')->toDoEverything();
+        AccessControl::forbid('user')->superPermission();
         AccessControl::allow('user')->to('view-company');
 
         $this->assertCount(0, $this->store->getForbiddenPermissionsOf($this->store->getRole('admin')));
@@ -538,8 +538,8 @@ class StoreServiceTest extends BaseTestCase
             ['name' => 'delete-company', 'title' => 'Delete Company'],
         ]);
 
-        AccessControl::allow('admin')->toDoEverything();
-        AccessControl::allow('manager')->toDoEverything();
+        AccessControl::allow('admin')->superPermission();
+        AccessControl::allow('manager')->superPermission();
         AccessControl::forbid('manager')->to('delete-company');
         AccessControl::allow('user')->to('view-company');
 
@@ -569,8 +569,8 @@ class StoreServiceTest extends BaseTestCase
             ['name' => 'delete-company', 'title' => 'Delete Company'],
         ]);
 
-        AccessControl::allow('admin')->toDoEverything();
-        AccessControl::allow('manager')->toDoEverything();
+        AccessControl::allow('admin')->superPermission();
+        AccessControl::allow('manager')->superPermission();
         AccessControl::forbid('manager')->to('delete-company');
         AccessControl::allow('user')->to('view-company');
 
@@ -603,8 +603,8 @@ class StoreServiceTest extends BaseTestCase
             ['name' => 'delete-company', 'title' => 'Delete Company'],
         ]);
 
-        AccessControl::allow('admin')->toDoEverything();
-        AccessControl::allow('manager')->toDoEverything();
+        AccessControl::allow('admin')->superPermission();
+        AccessControl::allow('manager')->superPermission();
         AccessControl::forbid('manager')->to('delete-company');
         AccessControl::allow('user')->to('view-company');
 
@@ -633,8 +633,8 @@ class StoreServiceTest extends BaseTestCase
             ['name' => 'delete-company', 'title' => 'Delete Company'],
         ]);
 
-        AccessControl::allow('admin')->toDoEverything();
-        AccessControl::allow('manager')->toDoEverything();
+        AccessControl::allow('admin')->superPermission();
+        AccessControl::allow('manager')->superPermission();
         AccessControl::forbid('manager')->to('delete-company');
         AccessControl::allow('user')->to('view-company');
 
@@ -663,8 +663,8 @@ class StoreServiceTest extends BaseTestCase
             ['name' => 'delete-company', 'title' => 'Delete Company'],
         ]);
 
-        AccessControl::allow('admin')->toDoEverything();
-        AccessControl::allow('manager')->toDoEverything();
+        AccessControl::allow('admin')->superPermission();
+        AccessControl::allow('manager')->superPermission();
         AccessControl::forbid('manager')->to('delete-company');
         AccessControl::allow('user')->to('view-company');
 
@@ -698,10 +698,10 @@ class StoreServiceTest extends BaseTestCase
             ['name' => 'delete-company', 'title' => 'Delete Company'],
         ]);
 
-        AccessControl::allow('admin')->toDoEverything();
-        AccessControl::allow('manager')->toDoEverything();
+        AccessControl::allow('admin')->superPermission();
+        AccessControl::allow('manager')->superPermission();
         AccessControl::forbid('manager')->to('delete-company');
-        AccessControl::forbid('someone')->toDoEverything();
+        AccessControl::forbid('someone')->superPermission();
         AccessControl::allow('someone')->to('view-company');
         AccessControl::allow('user')->to('view-company');
 
@@ -735,10 +735,10 @@ class StoreServiceTest extends BaseTestCase
             ['name' => 'delete-company', 'title' => 'Delete Company'],
         ]);
 
-        AccessControl::allow('admin')->toDoEverything();
-        AccessControl::allow('manager')->toDoEverything();
+        AccessControl::allow('admin')->superPermission();
+        AccessControl::allow('manager')->superPermission();
         AccessControl::forbid('manager')->to('delete-company');
-        AccessControl::forbid('someone')->toDoEverything();
+        AccessControl::forbid('someone')->superPermission();
         AccessControl::allow('someone')->to('view-company');
         AccessControl::allow('user')->to('view-company');
 
@@ -768,10 +768,10 @@ class StoreServiceTest extends BaseTestCase
             ['name' => 'delete-company', 'title' => 'Delete Company'],
         ]);
 
-        AccessControl::allow('admin')->toDoEverything();
-        AccessControl::allow('manager')->toDoEverything();
+        AccessControl::allow('admin')->superPermission();
+        AccessControl::allow('manager')->superPermission();
         AccessControl::forbid('manager')->to('delete-company');
-        AccessControl::forbid('someone')->toDoEverything();
+        AccessControl::forbid('someone')->superPermission();
         AccessControl::allow('someone')->to('view-company');
         AccessControl::allow('user')->to('view-company');
 
