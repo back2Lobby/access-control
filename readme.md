@@ -41,6 +41,9 @@ AccessControl is a Laravel package for easy role & permission management with mo
     - [Resetting User](#resetting-user)
 - [Features](#features)
   - [Cache](#cache)
+  - [Authorization](#authorization)
+  - [Blade Directive](#blade-directive)
+  - [Middleware](#middleware)
   </p></details>
 
 ## Introduction
@@ -57,13 +60,13 @@ AccessControl::allow("manager")->to('edit-company');
 AccessControl::assign('manager')->to($user);
 
 // You can also assign role for a specific roleable model
-AccessControl::assign('manager')->to('manager',$company);
+AccessControl::assign('manager',$company)->to($user);
 
 // Checking the permission on user for a roleable model
-AccessControl::canUser($user)->do("manager",$company);
+AccessControl::canUser($user)->do("edit-company",$company);
 
-// Checking if the user has an editor role for that model
-AccessControl::is($user)->an("manager",$company);
+// Checking if the user has a role for that model
+AccessControl::is($user)->a("manager",$company);
 ```
 
 ## Installation
@@ -271,12 +274,12 @@ To allow a role for a specific permission, you can use the method <i title="allo
 ```php
 AccessControl::allow('author')->to('edit'); // with permission name
 
-AccessControl::allow('author')->to('edit'); // with permission object
+AccessControl::allow('author')->to($permission); // with permission object
 
-AccessControl::allow('author')->to('edit'); // with permission id
+AccessControl::allow('author')->to(3); // with permission id
 ```
 
-Alternatively, we can use <i title="allow(Permission $permission): bool">`allow`</i> from Role Model itself like:
+Alternatively, we can use <i title="allow(Permission $permission): bool">`allow`</i> method from Role Model itself like:
 
 ```php
 $role->allow('create-post');
@@ -304,7 +307,7 @@ Alternatively, we can use <i title="disallow(Permission $permission): bool">`dis
 $role->disallow('create-post');
 ```
 
-To take back the super permission given to the role. use method `superPermission()` like this:
+To take back the super permission given to the role, use method <i title="superPermission(): bool">`superPermission()`</i> like this:
 
 ```php
 AccessControl::disallow('manager')->superPermission();
@@ -324,7 +327,7 @@ Alternatively, we can use <i title="forbid(Permission $permission): bool">`forbi
 $role->forbid('create-post');
 ```
 
-You can forbid the role from all the permissions indirectly (except allowed specifically) using the method `superPermission` like this:
+You can forbid the role from all the permissions indirectly (except allowed specifically) using the method <i title="superPermission(): bool">`superPermission()`</i> like this:
 
 ```php
 AccessControl::forbid('manager')->superPermission();
