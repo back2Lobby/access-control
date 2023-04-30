@@ -54,9 +54,9 @@ class RoleTest extends BaseTestCase
         $this->assertTrue($role->allow($permission));
 
         $this->assertTrue(AccessControl::canRole($role)->do($permission));
-        $this->assertCount(1, AccessControl::getStore()->getPermissions());
-        $this->assertCount(1, AccessControl::getStore()->getRoles());
-        $this->assertCount(1, AccessControl::getStore()->getMap());
+        $this->assertCount(1, AccessControl::getPermissions());
+        $this->assertCount(1, AccessControl::getRoles());
+        $this->assertCount(1, AccessControl::getMap());
     }
 
     /**
@@ -76,9 +76,9 @@ class RoleTest extends BaseTestCase
         // giving same permission for second time
         $this->assertTrue($role->allow($permission));
 
-        $this->assertCount(1, AccessControl::getStore()->getAllPermissionsOf($role));
-        $this->assertCount(1, AccessControl::getStore()->getAllowedPermissionsOf($role));
-        $this->assertCount(1, AccessControl::getStore()->getMap());
+        $this->assertCount(1, AccessControl::getAllPermissionsOf($role));
+        $this->assertCount(1, AccessControl::getAllowedPermissionsOf($role));
+        $this->assertCount(1, AccessControl::getMap());
     }
 
     /**
@@ -100,8 +100,8 @@ class RoleTest extends BaseTestCase
 
         $this->assertFalse(AccessControl::canRole($role)->do($permission1));
         $this->assertTrue(AccessControl::canRole($role)->do($permission2));
-        $this->assertCount(2, AccessControl::getStore()->getPermissions());
-        $this->assertCount(1, AccessControl::getStore()->getAllowedPermissionsOf($role));
+        $this->assertCount(2, AccessControl::getPermissions());
+        $this->assertCount(1, AccessControl::getAllowedPermissionsOf($role));
     }
 
     /**
@@ -119,9 +119,9 @@ class RoleTest extends BaseTestCase
         $this->assertTrue($role->allow($permission1));
         $this->assertTrue($role->forbid($permission2));
 
-        $this->assertCount(2, AccessControl::getStore()->getAllPermissionsOf($role));
-        $this->assertCount(1, AccessControl::getStore()->getAllowedPermissionsOf($role));
-        $this->assertCount(1, AccessControl::getStore()->getForbiddenPermissionsOf($role));
+        $this->assertCount(2, AccessControl::getAllPermissionsOf($role));
+        $this->assertCount(1, AccessControl::getAllowedPermissionsOf($role));
+        $this->assertCount(1, AccessControl::getForbiddenPermissionsOf($role));
     }
 
     /**
@@ -133,7 +133,7 @@ class RoleTest extends BaseTestCase
     {
         $role = Role::factory()->createFake();
 
-        $roles = AccessControl::getStore()->getRoles();
+        $roles = AccessControl::getRoles();
 
         $this->assertCount(1, $roles);
         $this->assertIsInt($role->id);
@@ -149,14 +149,14 @@ class RoleTest extends BaseTestCase
     {
         $role = Role::factory()->createFake();
 
-        $roles = AccessControl::getStore()->getRoles();
+        $roles = AccessControl::getRoles();
 
         $this->assertCount(1, $roles);
 
         // now deleting
         $role->delete();
 
-        $roles = AccessControl::getStore()->getRoles();
+        $roles = AccessControl::getRoles();
         $this->assertCount(0, $roles);
     }
 
@@ -174,7 +174,7 @@ class RoleTest extends BaseTestCase
 
         $role->save();
 
-        $roles = AccessControl::getStore()->getRoles();
+        $roles = AccessControl::getRoles();
 
         $this->assertCount(1, $roles);
         $this->assertIsInt($role->id);
@@ -191,7 +191,7 @@ class RoleTest extends BaseTestCase
     {
         $role = Role::factory()->createFake();
 
-        $roles = AccessControl::getStore()->getRoles();
+        $roles = AccessControl::getRoles();
 
         $this->assertCount(1, $roles);
 
@@ -200,7 +200,7 @@ class RoleTest extends BaseTestCase
             'title' => 'Test Title',
         ]);
 
-        $roles = AccessControl::getStore()->getRoles();
+        $roles = AccessControl::getRoles();
 
         $this->assertCount(1, $roles);
         $this->assertIsInt($role->id);
@@ -229,9 +229,9 @@ class RoleTest extends BaseTestCase
         $this->assertTrue(AccessControl::canRole($role)->do($permission2));
         $this->assertTrue(AccessControl::canRole($role)->do($permission3));
 
-        $this->assertCount(3, AccessControl::getStore()->getPermissions());
-        $this->assertCount(1, AccessControl::getStore()->getRoles());
-        $this->assertCount(3, AccessControl::getStore()->getMap());
+        $this->assertCount(3, AccessControl::getPermissions());
+        $this->assertCount(1, AccessControl::getRoles());
+        $this->assertCount(3, AccessControl::getMap());
     }
 
     /**

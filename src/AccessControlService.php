@@ -17,11 +17,28 @@ class AccessControlService
 
     public function __call($method_name, $args)
     {
-        return call_user_func_array([self::$access, $method_name], $args);
+        return self::forwardCall($method_name, $args);
     }
 
     public static function __callStatic($method_name, $args)
     {
-        return call_user_func_array([self::$access, $method_name], $args);
+        return self::forwardCall($method_name, $args);
+    }
+
+    private static function forwardCall($method_name, $args)
+    {
+        if (method_exists(self::$access->getStore(), $method_name)) {
+            return call_user_func_array(
+                [self::$access->getStore(), $method_name],
+                $args
+            );
+        } elseif (method_exists(self::$access, $method_name)) {
+            return call_user_func_array(
+                [self::$access, $method_name],
+                $args
+            );
+        }
+
+        throw new \TypeError(self::class.' does not have any method named `'.$method_name.'`');
     }
 }

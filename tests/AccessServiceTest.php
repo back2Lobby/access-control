@@ -1241,14 +1241,14 @@ class AccessServiceTest extends BaseTestCase
 
         $this->assertCount(3, $user1->permissions());
         $this->assertCount(3, $user2->permissions());
-        $this->assertCount(2, $user1->roles()->get());
-        $this->assertCount(1, $user2->roles()->get());
+        $this->assertCount(2, $user1->roles());
+        $this->assertCount(1, $user2->roles());
 
         $this->getAccessService()->resetUser($user1);
 
         $this->assertCount(0, $user1->permissions());
         $this->assertCount(3, $user2->permissions());
-        $this->assertCount(0, $user1->roles()->get());
-        $this->assertCount(1, $user2->roles()->get());
+        $this->assertCount(0, $user1->roles());
+        $this->assertCount(1, $user2->roles());
     }
 }

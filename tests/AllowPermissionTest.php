@@ -2,7 +2,6 @@
 
 namespace Back2Lobby\AccessControl\Tests;
 
-use Back2Lobby\AccessControl\Exceptions\InvalidPermissionException;
 use Back2Lobby\AccessControl\Facades\AccessControlFacade as AccessControl;
 use Back2Lobby\AccessControl\Models\Permission;
 use Back2Lobby\AccessControl\Models\Role;
@@ -46,7 +45,7 @@ class AllowPermissionTest extends BaseTestCase
         AccessControl::allow($role)->to($permission);
 
         $this->assertTrue(AccessControl::canRole($role)->do($permission));
-        $this->assertCount(1, AccessControl::getStore()->getMap());
+        $this->assertCount(1, AccessControl::getMap());
     }
 
     /**
@@ -76,24 +75,8 @@ class AllowPermissionTest extends BaseTestCase
 
         $permission1 = Permission::factory()->createFake();
 
-        $this->assertTrue(AccessControl::allow($role)->toDoEverything());
+        $this->assertTrue(AccessControl::allow($role)->superPermission());
 
         $this->assertTrue(AccessControl::canRole($role)->do($permission1));
-    }
-
-    /**
-     * @covers ::toDoEverything
-     *
-     * @test
-     */
-    public function it_throws_exception_if_super_permission_is_not_found_in_database()
-    {
-        $role = Role::factory()->createFake();
-
-        Permission::factory()->createFake();
-        Permission::factory()->createFake();
-
-        $this->expectException(InvalidPermissionException::class);
-        AccessControl::allow($role)->toDoEverything();
     }
 }

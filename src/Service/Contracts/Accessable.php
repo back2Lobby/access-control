@@ -87,21 +87,21 @@ interface Accessable
     public function deletePermission(Permission|string|int $permission): bool;
 
     /**
-     * Allow a role to do something by assigning a task by passing `App\Models\Role::class` object or just name of the role
+     * Grant a permission to a role
      *
      * @throws InvalidRoleException if given role is invalid or not found in database
      */
     public function allow(Role|string $role): AllowPermission;
 
     /**
-     * Allow a role to do something by assigning a task by passing `App\Models\Role::class` object or just name of the role
+     * Take back the granted permission from a role
      *
      * @throws InvalidRoleException if given role is invalid or not found in database
      */
     public function disallow(Role|string $role): DisallowPermission;
 
     /**
-     * Forbid a role to do something by assigning a task by passing `App\Models\Role::class` object or just name of the role
+     * Forbid a permission for a role
      *
      * @throws InvalidRoleException if given role is invalid or not found in database
      */

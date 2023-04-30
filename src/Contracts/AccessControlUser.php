@@ -7,12 +7,16 @@ use Back2Lobby\AccessControl\Models\Permission;
 use Back2Lobby\AccessControl\Models\Role;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;
 
 interface AccessControlUser
 {
-    public function roles(): BelongsToMany;
+    /**
+     * Get all the roles of this user
+     *
+     * @returns Collection
+     */
+    public function roles(): Collection;
 
     /**
      * Get all the permission of this user from any role combined

@@ -19,7 +19,7 @@ class UserRoleCheck
 
     /**
      * Check if the user have given role on the specified roleable e.g check if user is a manager in given company
-     * - if no roleable is given then it will return `true` if the user has the role for any roleable
+     *
      *
      * @throws InvalidRoleException|InvalidRoleableException
      */
@@ -75,6 +75,8 @@ class UserRoleCheck
     /**
      * check if user have all the given roles
      *
+     * **NOTE**: it doesn't check roleables for the roles
+     *
      * @param  array<int,string>  $roles array of role names as string
      *
      * @throws InvalidAttributesException
@@ -95,6 +97,8 @@ class UserRoleCheck
 
     /**
      * check if user have at least one of the given roles
+     *
+     * **NOTE**: it doesn't check roleables for the roles
      *
      * @param  array<int,string>  $roles array of role names as string
      *

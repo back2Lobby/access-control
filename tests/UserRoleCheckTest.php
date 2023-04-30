@@ -251,6 +251,34 @@ class UserRoleCheckTest extends BaseTestCase
     }
 
     /**
+     * @covers ::all
+     *
+     * @test
+     */
+    public function it_does_not_check_for_roleables_for_all_roles()
+    {
+        $user = User::factory()->create();
+
+        $role1 = Role::factory()->createFake(['roleables' => [Post::class]]);
+        $role2 = Role::factory()->createFake(['roleables' => [Company::class]]);
+
+        $user->assign($role1, Post::factory()->create());
+
+        $this->assertTrue(AccessControl::is($user)->all([
+            $role1->name,
+        ]));
+
+        $this->assertFalse(AccessControl::is($user)->all([
+            $role1->name,
+            $role2->name,
+        ]));
+
+        $this->assertFalse(AccessControl::is($user)->all([
+            $role2->name,
+        ]));
+    }
+
+    /**
      * @covers ::any
      *
      * @test
@@ -300,6 +328,34 @@ class UserRoleCheckTest extends BaseTestCase
         $this->expectException(InvalidAttributesException::class);
         $this->assertFalse(AccessControl::is($user)->any([
             $role1->id,
+        ]));
+    }
+
+    /**
+     * @covers ::any
+     *
+     * @test
+     */
+    public function it_does_not_check_for_roleables_any_role()
+    {
+        $user = User::factory()->create();
+
+        $role1 = Role::factory()->createFake(['roleables' => [Post::class]]);
+        $role2 = Role::factory()->createFake(['roleables' => [Company::class]]);
+
+        $user->assign($role1, Post::factory()->create());
+
+        $this->assertTrue(AccessControl::is($user)->any([
+            $role1->name,
+        ]));
+
+        $this->assertTrue(AccessControl::is($user)->any([
+            $role1->name,
+            $role2->name,
+        ]));
+
+        $this->assertFalse(AccessControl::is($user)->any([
+            $role2->name,
         ]));
     }
 }

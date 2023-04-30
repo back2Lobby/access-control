@@ -26,6 +26,6 @@ class Permission extends Model
 
     public function roles(): Collection
     {
-        return AccessControl::getStore()->getAllRolesOf($this);
+        return AccessControl::getAllRolesOf($this);
     }
 }

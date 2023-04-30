@@ -11,7 +11,6 @@ use Back2Lobby\AccessControl\Facades\AccessControlFacade;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Collection;
 
@@ -19,9 +18,11 @@ class User extends Authenticatable implements AccessControlUser
 {
     use HasFactory;
 
-    public function roles(): BelongsToMany
+    public function roles(): Collection
     {
-        return $this->belongsToMany(Role::class)->using(RoleUser::class);
+        return $this->belongsToMany(Role::class)->using(RoleUser::class)->get(['id'])->map(function ($role) {
+            return AccessControlFacade::getRole($role->id);
+        });
     }
 
     /**
@@ -35,9 +36,9 @@ class User extends Authenticatable implements AccessControlUser
         $roles = RoleUser::where('user_id', $this->id)->get(['role_id'])->pluck('role_id');
 
         // get all the permission of each role
-        $permissions = $roles->map(fn ($r) => AccessControlFacade::getStore()->getRole($r))
+        $permissions = $roles->map(fn ($r) => AccessControlFacade::getRole($r))
             ->filter(fn ($r) => ! is_null($r))
-            ->map(fn ($r) => AccessControlFacade::getStore()->getAllowedPermissionsOf($r));
+            ->map(fn ($r) => AccessControlFacade::getAllowedPermissionsOf($r));
 
         return $permissions->flatten()->unique();
     }
@@ -55,18 +56,20 @@ class User extends Authenticatable implements AccessControlUser
      */
     public static function whereIs(Role|string $role, Model $roleable = null): Builder
     {
-        if ($role = AccessControlFacade::getStore()->getRole($role)) {
+        if ($role = AccessControlFacade::getRole($role)) {
 
             $roleable = Role::getValidRoleable($role, $roleable);
 
-            return User::whereHas('roles', function ($q) use ($role, $roleable) {
-                $q->where('role_id', $role->id);
-                if (isset($roleable->id)) {
-                    $q->where('roleable_id', $roleable->id)->where('roleable_type', $roleable::class);
-                } else {
-                    $q->where('roleable_id', 0)->where('roleable_type', '');
-                }
-            });
+            return User::select('users.*')
+                    ->join('role_user', 'role_user.user_id', '=', 'users.id')
+                    ->where(function ($q) use ($role, $roleable) {
+                        $q->where('role_id', $role->id);
+                        if (isset($roleable->id)) {
+                            $q->where('roleable_id', $roleable->id)->where('roleable_type', $roleable::class);
+                        } else {
+                            $q->where('roleable_id', 0)->where('roleable_type', '');
+                        }
+                    });
         } else {
             throw new InvalidRoleException('Provided role cannot be validated because its either invalid or not found in database');
         }
@@ -85,12 +88,12 @@ class User extends Authenticatable implements AccessControlUser
      */
     public static function whereCan(Permission|string $permission, Model $roleable = null, bool $includeIndirectRoles = false): \Illuminate\Database\Eloquent\Builder
     {
-        if ($permission = AccessControlFacade::getStore()->getPermission($permission)) {
+        if ($permission = AccessControlFacade::getPermission($permission)) {
 
             $users = User::query();
 
             // get all roles that are directly allowed for this permission
-            $roles = AccessControlFacade::getStore()->getDirectlyAllowedRolesOf($permission);
+            $roles = AccessControlFacade::getDirectlyAllowedRolesOf($permission);
 
             // making sure that we get only roles that allow this roleable
             $roles = $roles->filter(function ($r) use ($roleable) {
@@ -102,7 +105,7 @@ class User extends Authenticatable implements AccessControlUser
             });
 
             if ($includeIndirectRoles) {
-                $roles = $roles->concat(AccessControlFacade::getStore()->getIndirectlyAllowedRolesOf($permission));
+                $roles = $roles->concat(AccessControlFacade::getIndirectlyAllowedRolesOf($permission));
             }
 
             // if no roles available then no need to go any further

@@ -65,7 +65,7 @@ trait isRoleable
             ->map(function ($group) {
                 $user = $group->first();
                 $roles = $group->pluck('role_id');
-                $user->roles = $roles->map(fn ($r) => AccessControlFacade::getStore()->getRole($r))->filter(fn ($r) => ! is_null($r));
+                $user->roles = $roles->map(fn ($r) => AccessControlFacade::getRole($r))->filter(fn ($r) => ! is_null($r));
                 unset($user->role_id);
 
                 return $user;
@@ -84,10 +84,10 @@ trait isRoleable
     {
 
         // getting a valid permission first
-        if ($permission = AccessControlFacade::getStore()->getPermission($permission)) {
+        if ($permission = AccessControlFacade::getPermission($permission)) {
 
             // get all the roles that are allowed for this permission
-            $allowedRoles = AccessControlFacade::getStore()->getAllowedRolesOf($permission);
+            $allowedRoles = AccessControlFacade::getAllowedRolesOf($permission);
 
             // no need to go any further if no role can have this permission
             if ($allowedRoles->count() <= 0) {
