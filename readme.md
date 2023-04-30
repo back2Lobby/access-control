@@ -112,15 +112,14 @@ Once it's installed, you can use a seeder to create base roles and permissions f
 
 ```php
 use Illuminate\Database\Seeder;
-use Back2Lobby\AccessControl\Models\Role;
-use Back2Lobby\AccessControl\Models\Permission;
+use Back2Lobby\AccessControl\Facades\AccessControlFacade as AccessControl;
 
 class AccessControlSeeder extends Seeder
 {
     public function run()
     {
         // Create all roles
-        Role::createManyRoles([
+        AccessControl::createManyRoles([
             [
                 'name' => 'admin',
                 'title' => 'Administrator',
@@ -132,7 +131,7 @@ class AccessControlSeeder extends Seeder
         ]);
 
         // Create all permissions
-        Permission::createManyPermissions([
+        AccessControl::createManyPermissions([
             [
                 'name' => 'create-post',
                 'title' => 'Create Post',
