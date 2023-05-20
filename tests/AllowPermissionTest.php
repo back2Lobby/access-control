@@ -8,7 +8,7 @@ use Back2Lobby\AccessControl\Models\Role;
 use Illuminate\Support\Facades\DB;
 
 /**
- * @coversDefaultClass \Back2Lobby\AccessControl\Service\AllowPermission
+ * @coversDefaultClass \Back2Lobby\AccessControl\Services\AllowPermission
  */
 class AllowPermissionTest extends BaseTestCase
 {
@@ -25,7 +25,7 @@ class AllowPermissionTest extends BaseTestCase
 
         $this->assertTrue(AccessControl::allow($role)->to($permission));
 
-        $this->assertCount(1, DB::table('permission_role')->get());
+        $this->assertCount(1, DB::table('assigned_permissions')->get());
         $this->assertTrue(AccessControl::canRole($role)->do($permission));
     }
 
@@ -45,7 +45,7 @@ class AllowPermissionTest extends BaseTestCase
         AccessControl::allow($role)->to($permission);
 
         $this->assertTrue(AccessControl::canRole($role)->do($permission));
-        $this->assertCount(1, AccessControl::getMap());
+        $this->assertCount(1, AccessControl::getMaps());
     }
 
     /**

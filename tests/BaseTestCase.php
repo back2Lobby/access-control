@@ -3,7 +3,8 @@
 namespace Back2Lobby\AccessControl\Tests;
 
 use Back2Lobby\AccessControl\AccessControlServiceProvider;
-use Back2Lobby\AccessControl\Store\StoreService;
+use Back2Lobby\AccessControl\Facades\AccessControlFacade;
+use Back2Lobby\AccessControl\Tests\Models\User;
 use Closure;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -37,8 +38,13 @@ abstract class BaseTestCase extends OrchestraTestCase
         });
 
         // clear the store cache for every test
-        StoreService::getInstance()->clearCache();
-        StoreService::getInstance()->reset();
+        AccessControlFacade::clearCache();
+        AccessControlFacade::reset();
+
+        // set the user model of auth
+        AccessControlFacade::setAuthUserModel(User::class);
+        AccessControlFacade::clearAssignedRoles();
+        AccessControlFacade::resetAuthUser();
     }
 
     protected function getPackageProviders($app): array

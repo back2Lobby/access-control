@@ -6,12 +6,13 @@ use Back2Lobby\AccessControl\Exceptions\InvalidAttributesException;
 use Back2Lobby\AccessControl\Exceptions\InvalidRoleableException;
 use Back2Lobby\AccessControl\Facades\AccessControlFacade as AccessControl;
 use Back2Lobby\AccessControl\Models\Role;
-use Back2Lobby\AccessControl\Models\User;
 use Back2Lobby\AccessControl\Tests\Models\Company;
 use Back2Lobby\AccessControl\Tests\Models\Post;
+use Back2Lobby\AccessControl\Tests\Models\User;
+use Illuminate\Support\Facades\DB;
 
 /**
- * @coversDefaultClass \Back2Lobby\AccessControl\Service\UserRoleCheck
+ * @coversDefaultClass \Back2Lobby\AccessControl\Services\UserRoleCheck
  */
 class UserRoleCheckTest extends BaseTestCase
 {
@@ -43,6 +44,29 @@ class UserRoleCheckTest extends BaseTestCase
         $role = Role::factory()->createFake();
 
         $this->assertFalse(AccessControl::is($user)->a($role));
+    }
+
+    /**
+     * @covers ::a
+     *
+     * @test
+     */
+    public function it_returns_valid_response_if_the_user_is_authenticated()
+    {
+        $user = User::factory()->create();
+        $role = Role::factory()->createFake();
+
+        $this->actingAs($user);
+
+        DB::enableQueryLog();
+        $this->assertFalse(AccessControl::is($user)->a($role));
+
+        //making sure it doesn't take the user roles from database everytime if its authenticated user
+        $this->assertFalse(AccessControl::is($user)->a($role));
+
+        $this->assertCount(1, DB::getQueryLog());
+
+        DB::disableQueryLog();
     }
 
     /**

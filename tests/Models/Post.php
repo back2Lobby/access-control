@@ -2,11 +2,11 @@
 
 namespace Back2Lobby\AccessControl\Tests\Models;
 
-use Back2Lobby\AccessControl\Traits\isRoleable;
+use Back2Lobby\AccessControl\Traits\Roleable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
 {
-    use isRoleable, HasFactory;
+    use Roleable, HasFactory;
 }

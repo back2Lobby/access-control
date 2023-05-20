@@ -9,28 +9,29 @@ use Back2Lobby\AccessControl\Exceptions\InvalidUserException;
 use Back2Lobby\AccessControl\Exceptions\UpdateProcessFailedException;
 use Back2Lobby\AccessControl\Models\Permission;
 use Back2Lobby\AccessControl\Models\Role;
-use Back2Lobby\AccessControl\Models\User;
-use Back2Lobby\AccessControl\Service\AccessService;
-use Back2Lobby\AccessControl\Service\AllowPermission;
-use Back2Lobby\AccessControl\Service\AssignRole;
-use Back2Lobby\AccessControl\Service\Contracts\Accessable;
-use Back2Lobby\AccessControl\Service\DisallowPermission;
-use Back2Lobby\AccessControl\Service\ForbidPermission;
-use Back2Lobby\AccessControl\Service\RetractRole;
-use Back2Lobby\AccessControl\Service\RolePermissionCheck;
-use Back2Lobby\AccessControl\Service\UserPermissionCheck;
-use Back2Lobby\AccessControl\Service\UserRoleCheck;
-use Back2Lobby\AccessControl\Store\Abstracts\Storable;
-use Back2Lobby\AccessControl\Store\StoreService;
+use Back2Lobby\AccessControl\Services\AccessService;
+use Back2Lobby\AccessControl\Services\AllowPermission;
+use Back2Lobby\AccessControl\Services\AssignRole;
+use Back2Lobby\AccessControl\Services\Contracts\Accessable;
+use Back2Lobby\AccessControl\Services\DisallowPermission;
+use Back2Lobby\AccessControl\Services\ForbidPermission;
+use Back2Lobby\AccessControl\Services\RetractRole;
+use Back2Lobby\AccessControl\Services\RolePermissionCheck;
+use Back2Lobby\AccessControl\Services\UserPermissionCheck;
+use Back2Lobby\AccessControl\Services\UserRoleCheck;
+use Back2Lobby\AccessControl\Stores\Abstracts\CacheStoreBase;
+use Back2Lobby\AccessControl\Stores\CacheStore;
+use Back2Lobby\AccessControl\Stores\SessionStore;
 use Back2Lobby\AccessControl\Tests\Models\Company;
 use Back2Lobby\AccessControl\Tests\Models\Post;
+use Back2Lobby\AccessControl\Tests\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ValidatedInput;
 
 /**
  * @method Accessable getAccessService()
  *
- * @coversDefaultClass \Back2Lobby\AccessControl\Service\AccessService
+ * @coversDefaultClass \Back2Lobby\AccessControl\Services\AccessService
  */
 class AccessServiceTest extends BaseTestCase
 {
@@ -43,7 +44,7 @@ class AccessServiceTest extends BaseTestCase
     public function __call($method_name, $arguments)
     {
         if ($method_name === 'getAccessService') {
-            return new AccessService(StoreService::getInstance());
+            return new AccessService(CacheStore::getInstance(), SessionStore::getInstance());
         } else {
             // Call the parent method for all other magic methods
             return parent::$method_name($arguments);
@@ -51,13 +52,13 @@ class AccessServiceTest extends BaseTestCase
     }
 
     /**
-     * @covers ::getStore
+     * @covers ::getCacheStore
      *
      * @test
      */
     public function it_returns_valid_storable_instance()
     {
-        $this->assertInstanceOf(Storable::class, $this->getAccessService()->getStore());
+        $this->assertInstanceOf(CacheStoreBase::class, $this->getAccessService()->getCacheStore());
     }
 
     /**
@@ -83,13 +84,13 @@ class AccessServiceTest extends BaseTestCase
         $this->assertInstanceOf(Role::class, $role1);
         $this->assertInstanceOf(Role::class, $role2);
 
-        $this->assertCount(2, $this->getAccessService()->getStore()->getRoles());
+        $this->assertCount(2, $this->getAccessService()->getCacheStore()->getRoles());
 
-        $this->assertCount(1, $this->getAccessService()->getStore()->getRoles()->where('id', $role1->id));
-        $this->assertCount(1, $this->getAccessService()->getStore()->getRoles()->where('name', $role1->name));
+        $this->assertCount(1, $this->getAccessService()->getCacheStore()->getRoles()->where('id', $role1->id));
+        $this->assertCount(1, $this->getAccessService()->getCacheStore()->getRoles()->where('name', $role1->name));
 
-        $this->assertCount(1, $this->getAccessService()->getStore()->getRoles()->where('id', $role2->id));
-        $this->assertCount(1, $this->getAccessService()->getStore()->getRoles()->where('name', $role2->name));
+        $this->assertCount(1, $this->getAccessService()->getCacheStore()->getRoles()->where('id', $role2->id));
+        $this->assertCount(1, $this->getAccessService()->getCacheStore()->getRoles()->where('name', $role2->name));
     }
 
     /**
@@ -104,8 +105,8 @@ class AccessServiceTest extends BaseTestCase
             'title' => 'Admin',
         ]);
 
-        $this->assertCount(1, $this->getAccessService()->getStore()->getRoles());
-        $this->assertCount(1, $this->getAccessService()->getStore()->getRoles()->where('name', 'admin'));
+        $this->assertCount(1, $this->getAccessService()->getCacheStore()->getRoles());
+        $this->assertCount(1, $this->getAccessService()->getCacheStore()->getRoles()->where('name', 'admin'));
     }
 
     /**
@@ -177,12 +178,12 @@ class AccessServiceTest extends BaseTestCase
             ['name' => 'editor', 'title' => 'Editor', 'roleables' => [Post::class]],
         ]);
 
-        $this->assertCount(3, $this->getAccessService()->getStore()->getRoles());
+        $this->assertCount(3, $this->getAccessService()->getCacheStore()->getRoles());
 
-        $this->assertCount(1, $this->getAccessService()->getStore()->getRoles()->where('name', 'admin'));
-        $this->assertCount(1, $this->getAccessService()->getStore()->getRoles()->where('name', 'manager'));
-        $this->assertCount(1, $this->getAccessService()->getStore()->getRoles()->where('name', 'editor'));
-        $this->assertSameArray([Post::class], $this->getAccessService()->getStore()->getRoles()->where('name', 'editor')->first()->roleables);
+        $this->assertCount(1, $this->getAccessService()->getCacheStore()->getRoles()->where('name', 'admin'));
+        $this->assertCount(1, $this->getAccessService()->getCacheStore()->getRoles()->where('name', 'manager'));
+        $this->assertCount(1, $this->getAccessService()->getCacheStore()->getRoles()->where('name', 'editor'));
+        $this->assertSameArray([Post::class], $this->getAccessService()->getCacheStore()->getRoles()->where('name', 'editor')->first()->roleables);
     }
 
     /**
@@ -192,12 +193,14 @@ class AccessServiceTest extends BaseTestCase
      */
     public function it_syncs_roles_after_creating_many_roles_at_once()
     {
+        $this->getAccessService()->getCacheStore()->getRoles();
+
         $this->getAccessService()->createManyRoles([
             ['name' => 'admin', 'title' => 'Admin'],
             ['name' => 'editor', 'title' => 'Editor', 'roleables' => [Post::class]],
         ]);
 
-        $this->assertCount(2, $this->getAccessService()->getStore()->getRoles());
+        $this->assertCount(2, $this->getAccessService()->getCacheStore()->getRoles());
     }
 
     /**
@@ -298,8 +301,8 @@ class AccessServiceTest extends BaseTestCase
             'title' => 'New Title',
         ]);
 
-        $this->assertNotNull($this->getAccessService()->getStore()->getRole($role->id));
-        $this->assertSame('New Title', $this->getAccessService()->getStore()->getRole($role->id)->title);
+        $this->assertNotNull($this->getAccessService()->getCacheStore()->getRole($role->id));
+        $this->assertSame('New Title', $this->getAccessService()->getCacheStore()->getRole($role->id)->title);
     }
 
     /**
@@ -327,11 +330,11 @@ class AccessServiceTest extends BaseTestCase
             'name' => 'New Name',
         ]);
 
-        $this->assertCount(2, $this->getAccessService()->getStore()->getRoles());
-        $this->assertNotNull($this->getAccessService()->getStore()->getRole($role1->id));
-        $this->assertSame('New Title', $this->getAccessService()->getStore()->getRole($role1->id)->title);
-        $this->assertNotNull($this->getAccessService()->getStore()->getRole($role2->id));
-        $this->assertSame('New Name', $this->getAccessService()->getStore()->getRole($role2->id)->name);
+        $this->assertCount(2, $this->getAccessService()->getCacheStore()->getRoles());
+        $this->assertNotNull($this->getAccessService()->getCacheStore()->getRole($role1->id));
+        $this->assertSame('New Title', $this->getAccessService()->getCacheStore()->getRole($role1->id)->title);
+        $this->assertNotNull($this->getAccessService()->getCacheStore()->getRole($role2->id));
+        $this->assertSame('New Name', $this->getAccessService()->getCacheStore()->getRole($role2->id)->name);
     }
 
     /**
@@ -449,9 +452,9 @@ class AccessServiceTest extends BaseTestCase
             'description' => 'Allow to Edit the posts',
         ]);
 
-        $this->assertCount(2, $this->getAccessService()->getStore()->getPermissions());
-        $this->assertCount(1, $this->getAccessService()->getStore()->getPermissions()->where('name', 'view-post'));
-        $this->assertCount(1, $this->getAccessService()->getStore()->getPermissions()->where('name', 'edit-post'));
+        $this->assertCount(2, $this->getAccessService()->getCacheStore()->getPermissions());
+        $this->assertCount(1, $this->getAccessService()->getCacheStore()->getPermissions()->where('name', 'view-post'));
+        $this->assertCount(1, $this->getAccessService()->getCacheStore()->getPermissions()->where('name', 'edit-post'));
     }
 
     /**
@@ -466,8 +469,8 @@ class AccessServiceTest extends BaseTestCase
             'title' => 'Edit Posts',
         ]);
 
-        $this->assertCount(1, $this->getAccessService()->getStore()->getPermissions());
-        $this->assertCount(1, $this->getAccessService()->getStore()->getPermissions()->where('name', 'edit-posts'));
+        $this->assertCount(1, $this->getAccessService()->getCacheStore()->getPermissions());
+        $this->assertCount(1, $this->getAccessService()->getCacheStore()->getPermissions()->where('name', 'edit-posts'));
     }
 
     /**
@@ -532,12 +535,12 @@ class AccessServiceTest extends BaseTestCase
             ['name' => 'delete-post', 'title' => 'Delete Post', 'description' => 'delete the post permanently'],
         ]);
 
-        $this->assertCount(3, $this->getAccessService()->getStore()->getPermissions());
+        $this->assertCount(3, $this->getAccessService()->getCacheStore()->getPermissions());
 
-        $this->assertCount(1, $this->getAccessService()->getStore()->getPermissions()->where('name', 'edit-post'));
-        $this->assertCount(1, $this->getAccessService()->getStore()->getPermissions()->where('name', 'view-post'));
-        $this->assertCount(1, $this->getAccessService()->getStore()->getPermissions()->where('name', 'delete-post'));
-        $this->assertSame('delete the post permanently', $this->getAccessService()->getStore()->getPermissions()->where('name', 'delete-post')->first()->description);
+        $this->assertCount(1, $this->getAccessService()->getCacheStore()->getPermissions()->where('name', 'edit-post'));
+        $this->assertCount(1, $this->getAccessService()->getCacheStore()->getPermissions()->where('name', 'view-post'));
+        $this->assertCount(1, $this->getAccessService()->getCacheStore()->getPermissions()->where('name', 'delete-post'));
+        $this->assertSame('delete the post permanently', $this->getAccessService()->getCacheStore()->getPermissions()->where('name', 'delete-post')->first()->description);
     }
 
     /**
@@ -552,7 +555,7 @@ class AccessServiceTest extends BaseTestCase
             ['name' => 'delete-post', 'title' => 'Delete Post', 'description' => 'delete the post permanently'],
         ]);
 
-        $this->assertCount(2, $this->getAccessService()->getStore()->getPermissions());
+        $this->assertCount(2, $this->getAccessService()->getCacheStore()->getPermissions());
     }
 
     /**
@@ -636,8 +639,8 @@ class AccessServiceTest extends BaseTestCase
             'name' => 'view-all-posts',
         ]);
 
-        $this->assertCount(1, $this->getAccessService()->getStore()->getPermissions()->where('id', $permission->id));
-        $this->assertSame('view-all-posts', $this->getAccessService()->getStore()->getPermissions()->where('id', $permission->id)->first()->name);
+        $this->assertCount(1, $this->getAccessService()->getCacheStore()->getPermissions()->where('id', $permission->id));
+        $this->assertSame('view-all-posts', $this->getAccessService()->getCacheStore()->getPermissions()->where('id', $permission->id)->first()->name);
     }
 
     /**
@@ -661,9 +664,9 @@ class AccessServiceTest extends BaseTestCase
             'name' => 'view-all-posts',
         ]);
 
-        $this->assertCount(2, $this->getAccessService()->getStore()->getPermissions());
-        $this->assertCount(1, $this->getAccessService()->getStore()->getPermissions()->where('id', $permission1->id));
-        $this->assertCount(1, $this->getAccessService()->getStore()->getPermissions()->where('id', $permission2->id));
+        $this->assertCount(2, $this->getAccessService()->getCacheStore()->getPermissions());
+        $this->assertCount(1, $this->getAccessService()->getCacheStore()->getPermissions()->where('id', $permission1->id));
+        $this->assertCount(1, $this->getAccessService()->getCacheStore()->getPermissions()->where('id', $permission2->id));
     }
 
     /**
@@ -779,13 +782,13 @@ class AccessServiceTest extends BaseTestCase
             'title' => 'Editor',
         ]);
 
-        $this->assertCount(3, $this->getAccessService()->getStore()->getRoles());
+        $this->assertCount(3, $this->getAccessService()->getCacheStore()->getRoles());
 
         $this->assertTrue($this->getAccessService()->deleteRole($role1));
         $this->assertTrue($this->getAccessService()->deleteRole($role2->name));
         $this->assertTrue($this->getAccessService()->deleteRole($role3->id));
 
-        $this->assertCount(0, $this->getAccessService()->getStore()->getRoles());
+        $this->assertCount(0, $this->getAccessService()->getCacheStore()->getRoles());
     }
 
     /**
@@ -820,13 +823,13 @@ class AccessServiceTest extends BaseTestCase
             'title' => 'Delete Post',
         ]);
 
-        $this->assertCount(3, $this->getAccessService()->getStore()->getPermissions());
+        $this->assertCount(3, $this->getAccessService()->getCacheStore()->getPermissions());
 
         $this->assertTrue($this->getAccessService()->deletePermission($permission1));
         $this->assertTrue($this->getAccessService()->deletePermission($permission2->name));
         $this->assertTrue($this->getAccessService()->deletePermission($permission3->id));
 
-        $this->assertCount(0, $this->getAccessService()->getStore()->getPermissions());
+        $this->assertCount(0, $this->getAccessService()->getCacheStore()->getPermissions());
     }
 
     /**
@@ -1177,13 +1180,13 @@ class AccessServiceTest extends BaseTestCase
         $this->getAccessService()->allow($role2)->to('edit-company');
         $this->getAccessService()->allow($role2)->to('delete-company');
 
-        $this->assertCount(2, $this->getAccessService()->getStore()->getAllowedPermissionsOf($role1));
-        $this->assertCount(3, $this->getAccessService()->getStore()->getAllowedPermissionsOf($role2));
+        $this->assertCount(2, $this->getAccessService()->getCacheStore()->getAllowedPermissionsOf($role1));
+        $this->assertCount(3, $this->getAccessService()->getCacheStore()->getAllowedPermissionsOf($role2));
 
         $this->getAccessService()->resetRole($role1);
 
-        $this->assertCount(0, $this->getAccessService()->getStore()->getAllowedPermissionsOf($role1));
-        $this->assertCount(3, $this->getAccessService()->getStore()->getAllowedPermissionsOf($role2));
+        $this->assertCount(0, $this->getAccessService()->getCacheStore()->getAllowedPermissionsOf($role1));
+        $this->assertCount(3, $this->getAccessService()->getCacheStore()->getAllowedPermissionsOf($role2));
     }
 
     /**

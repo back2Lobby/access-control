@@ -5,7 +5,6 @@ namespace Back2Lobby\AccessControl\Models;
 use Back2Lobby\AccessControl\Exceptions\InvalidRoleableException;
 use Back2Lobby\AccessControl\Facades\AccessControlFacade as AccessControl;
 use Back2Lobby\AccessControl\Factories\RoleFactory;
-use Back2Lobby\AccessControl\Traits\syncOnEvents;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +20,7 @@ use Illuminate\Support\Collection;
  */
 class Role extends Model
 {
-    use HasFactory, syncOnEvents;
+    use HasFactory;
 
     protected $guarded = [];
 
@@ -51,7 +50,7 @@ class Role extends Model
 
     public function users(Model $roleable = null): Builder
     {
-        return User::whereIs($this, $roleable);
+        return AccessControl::whereIs($this, $roleable);
     }
 
     /**

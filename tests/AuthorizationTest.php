@@ -4,8 +4,8 @@ namespace Back2Lobby\AccessControl\Tests;
 
 use Back2Lobby\AccessControl\Models\Permission;
 use Back2Lobby\AccessControl\Models\Role;
-use Back2Lobby\AccessControl\Models\User;
 use Back2Lobby\AccessControl\Tests\Models\Post;
+use Back2Lobby\AccessControl\Tests\Models\User;
 use Illuminate\Support\Facades\Route;
 
 class AuthorizationTest extends BaseTestCase

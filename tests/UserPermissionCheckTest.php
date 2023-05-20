@@ -5,10 +5,11 @@ namespace Back2Lobby\AccessControl\Tests;
 use Back2Lobby\AccessControl\Facades\AccessControlFacade as AccessControl;
 use Back2Lobby\AccessControl\Models\Permission;
 use Back2Lobby\AccessControl\Models\Role;
-use Back2Lobby\AccessControl\Models\User;
+use Back2Lobby\AccessControl\Tests\Models\User;
+use Illuminate\Support\Facades\DB;
 
 /**
- * @coversDefaultClass \Back2Lobby\AccessControl\Service\UserPermissionCheck
+ * @coversDefaultClass \Back2Lobby\AccessControl\Services\UserPermissionCheck
  */
 class UserPermissionCheckTest extends BaseTestCase
 {

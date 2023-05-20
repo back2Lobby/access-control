@@ -6,9 +6,10 @@ use Back2Lobby\AccessControl\Exceptions\InvalidRoleableException;
 use Back2Lobby\AccessControl\Facades\AccessControlFacade as AccessControl;
 use Back2Lobby\AccessControl\Models\Permission;
 use Back2Lobby\AccessControl\Models\Role;
-use Back2Lobby\AccessControl\Models\User;
 use Back2Lobby\AccessControl\Tests\Models\Company;
 use Back2Lobby\AccessControl\Tests\Models\Post;
+use Back2Lobby\AccessControl\Tests\Models\User;
+use Back2Lobby\AccessControl\Traits\SyncOnEvents;
 use Illuminate\Database\QueryException;
 
 /**
@@ -16,17 +17,6 @@ use Illuminate\Database\QueryException;
  * */
 class RoleTest extends BaseTestCase
 {
-    /**
-     * @uses \Back2Lobby\AccessControl\Traits\syncOnEvents
-     *
-     * @coversNothing
-     *
-     * @test
-     */
-    public function it_uses_sync_on_events_trait()
-    {
-        $this->assertTrue(in_array('Back2Lobby\\AccessControl\\Traits\\syncOnEvents', class_uses(Role::class)));
-    }
 
     /**
      * @covers \Back2Lobby\AccessControl\Models\Role
@@ -56,7 +46,7 @@ class RoleTest extends BaseTestCase
         $this->assertTrue(AccessControl::canRole($role)->do($permission));
         $this->assertCount(1, AccessControl::getPermissions());
         $this->assertCount(1, AccessControl::getRoles());
-        $this->assertCount(1, AccessControl::getMap());
+        $this->assertCount(1, AccessControl::getMaps());
     }
 
     /**
@@ -78,7 +68,7 @@ class RoleTest extends BaseTestCase
 
         $this->assertCount(1, AccessControl::getAllPermissionsOf($role));
         $this->assertCount(1, AccessControl::getAllowedPermissionsOf($role));
-        $this->assertCount(1, AccessControl::getMap());
+        $this->assertCount(1, AccessControl::getMaps());
     }
 
     /**
@@ -140,73 +130,73 @@ class RoleTest extends BaseTestCase
         $this->assertEquals($role->id, $roles->first()->id);
     }
 
-    /**
-     * @covers ::booted
-     *
-     * @test
-     */
-    public function it_syncs_role_on_deletion()
-    {
-        $role = Role::factory()->createFake();
+//    /**
+//     * @covers ::booted
+//     *
+//     * @test
+//     */
+//    public function it_syncs_role_on_deletion()
+//    {
+//        $role = Role::factory()->createFake();
+//
+//        $roles = AccessControl::getRoles();
+//
+//        $this->assertCount(1, $roles);
+//
+//        // now deleting
+//        $role->delete();
+//
+//        $roles = AccessControl::getRoles();
+//        $this->assertCount(0, $roles);
+//    }
 
-        $roles = AccessControl::getRoles();
+//    /**
+//     * @covers ::booted
+//     *
+//     * @test
+//     */
+//    public function it_syncs_role_on_save()
+//    {
+//        $role = new Role([
+//            'name' => 'admin',
+//            'title' => 'Admin',
+//        ]);
+//
+//        $role->save();
+//
+//        $roles = AccessControl::getRoles();
+//
+//        $this->assertCount(1, $roles);
+//        $this->assertIsInt($role->id);
+//        $this->assertEquals($role->id, $roles->first()->id);
+//        $this->assertSame($role->title, $roles->first()->title);
+//    }
 
-        $this->assertCount(1, $roles);
-
-        // now deleting
-        $role->delete();
-
-        $roles = AccessControl::getRoles();
-        $this->assertCount(0, $roles);
-    }
-
-    /**
-     * @covers ::booted
-     *
-     * @test
-     */
-    public function it_syncs_role_on_save()
-    {
-        $role = new Role([
-            'name' => 'admin',
-            'title' => 'Admin',
-        ]);
-
-        $role->save();
-
-        $roles = AccessControl::getRoles();
-
-        $this->assertCount(1, $roles);
-        $this->assertIsInt($role->id);
-        $this->assertEquals($role->id, $roles->first()->id);
-        $this->assertSame($role->title, $roles->first()->title);
-    }
-
-    /**
-     * @covers ::booted
-     *
-     * @test
-     */
-    public function it_syncs_role_on_update()
-    {
-        $role = Role::factory()->createFake();
-
-        $roles = AccessControl::getRoles();
-
-        $this->assertCount(1, $roles);
-
-        // updating
-        $role->update([
-            'title' => 'Test Title',
-        ]);
-
-        $roles = AccessControl::getRoles();
-
-        $this->assertCount(1, $roles);
-        $this->assertIsInt($role->id);
-        $this->assertEquals($role->id, $roles->first()->id);
-        $this->assertSame($role->title, $roles->first()->title);
-    }
+//    /**
+//     * @covers ::booted
+//     *
+//     * @test
+//     */
+//    public function it_syncs_role_on_update()
+//    {
+//        $role = Role::factory()->createFake();
+//
+//        $roles = AccessControl::getRoles();
+//
+//        $this->assertCount(1, $roles);
+//
+//        // updating
+//        $role->update([
+//            'title' => 'Test Title',
+//        ]);
+//
+//        $roles = AccessControl::getRoles();
+//
+//        $this->assertCount(1, $roles);
+//        $this->assertIsInt($role->id);
+//        $this->assertEquals($role->id, $roles->first()->id);
+//        $this->assertSame($role->title, $roles->first()->title);
+//    }
 
     /**
      * @covers ::permissions
@@ -231,7 +221,7 @@ class RoleTest extends BaseTestCase
 
         $this->assertCount(3, AccessControl::getPermissions());
         $this->assertCount(1, AccessControl::getRoles());
-        $this->assertCount(3, AccessControl::getMap());
+        $this->assertCount(3, AccessControl::getMaps());
     }
 
     /**

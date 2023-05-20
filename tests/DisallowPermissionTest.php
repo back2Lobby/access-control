@@ -7,7 +7,7 @@ use Back2Lobby\AccessControl\Models\Permission;
 use Back2Lobby\AccessControl\Models\Role;
 
 /**
- * @coversDefaultClass \Back2Lobby\AccessControl\Service\DisallowPermission
+ * @coversDefaultClass \Back2Lobby\AccessControl\Services\DisallowPermission
  */
 class DisallowPermissionTest extends BaseTestCase
 {

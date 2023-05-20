@@ -6,13 +6,13 @@ use Back2Lobby\AccessControl\Exceptions\InvalidRoleableException;
 use Back2Lobby\AccessControl\Exceptions\InvalidUserException;
 use Back2Lobby\AccessControl\Facades\AccessControlFacade as AccessControl;
 use Back2Lobby\AccessControl\Models\Role;
-use Back2Lobby\AccessControl\Models\User;
 use Back2Lobby\AccessControl\Tests\Models\Company;
 use Back2Lobby\AccessControl\Tests\Models\Post;
+use Back2Lobby\AccessControl\Tests\Models\User;
 use Illuminate\Support\Facades\DB;
 
 /**
- * @coversDefaultClass \Back2Lobby\AccessControl\Service\RetractRole
+ * @coversDefaultClass \Back2Lobby\AccessControl\Services\RetractRole
  */
 class RetractRoleTest extends BaseTestCase
 {
@@ -34,7 +34,7 @@ class RetractRoleTest extends BaseTestCase
         $this->assertTrue(AccessControl::retract($role)->from($user));
 
         $this->assertCount(0, User::whereIs($role)->get());
-        $this->assertCount(0, DB::table('role_user')->get());
+        $this->assertCount(0, DB::table('assigned_roles')->get());
     }
 
     /**
@@ -59,7 +59,7 @@ class RetractRoleTest extends BaseTestCase
         $this->assertTrue(AccessControl::retract($role, $post)->from($user));
 
         $this->assertCount(0, User::whereIs($role, $post)->get());
-        $this->assertCount(0, DB::table('role_user')->get());
+        $this->assertCount(0, DB::table('assigned_roles')->get());
     }
 
     /**
@@ -75,11 +75,11 @@ class RetractRoleTest extends BaseTestCase
 
         AccessControl::assign($role)->to($user);
 
-        $this->assertCount(1, $user->belongsToMany(Role::class)->where('id', $role->id)->get());
+        $this->assertCount(1, $user->belongsToMany(Role::class, 'assigned_roles')->where('id', $role->id)->get());
 
         $this->assertTrue(AccessControl::retract($role)->from($user));
 
-        $this->assertCount(0, $user->belongsToMany(Role::class)->where('id', $role->id)->get());
+        $this->assertCount(0, $user->belongsToMany(Role::class, 'assigned_roles')->where('id', $role->id)->get());
 
         $this->assertFalse(AccessControl::retract($role)->from($user));
     }
@@ -112,7 +112,7 @@ class RetractRoleTest extends BaseTestCase
             AccessControl::retract($role2, $company)->from($user);
         });
 
-        $this->assertCount(2, $user->belongsToMany(Role::class)->get());
+        $this->assertCount(2, $user->belongsToMany(Role::class, 'assigned_roles')->get());
     }
 
     /**
@@ -120,16 +120,18 @@ class RetractRoleTest extends BaseTestCase
      *
      * @test
      */
-    public function it_throws_exception_if_user_or_id_passed_is_not_found_in_database()
+    public function it_throws_exception_if_user_passed_is_not_found_in_database()
     {
         $user = User::factory()->create();
         $role = Role::factory()->createFake();
 
         AccessControl::assign($role)->to($user);
 
-        $this->expectException(InvalidUserException::class);
-        AccessControl::retract($role)->from(999);
+        $emptyUser = new User();
 
-        $this->assertCount(1, $user->belongsToMany(Role::class)->get());
+        $this->expectException(InvalidUserException::class);
+        AccessControl::retract($role)->from($emptyUser);
+
+        $this->assertCount(1, $user->belongsToMany(Role::class, 'assigned_roles')->get());
     }
 }

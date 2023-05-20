@@ -4,7 +4,6 @@ namespace Back2Lobby\AccessControl\Models;
 
 use Back2Lobby\AccessControl\Facades\AccessControlFacade as AccessControl;
 use Back2Lobby\AccessControl\Factories\PermissionFactory;
-use Back2Lobby\AccessControl\Traits\syncOnEvents;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -20,7 +19,7 @@ use Illuminate\Support\Collection;
  */
 class Permission extends Model
 {
-    use HasFactory, syncOnEvents;
+    use HasFactory;
 
     protected $guarded = [];
 

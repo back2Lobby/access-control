@@ -2,17 +2,18 @@
 
 namespace Back2Lobby\AccessControl;
 
-use Back2Lobby\AccessControl\Service\AccessService;
-use Back2Lobby\AccessControl\Service\Contracts\Accessable;
-use Back2Lobby\AccessControl\Store\Abstracts\Storable;
+use Back2Lobby\AccessControl\Services\AccessService;
+use Back2Lobby\AccessControl\Services\Contracts\Accessable;
+use Back2Lobby\AccessControl\Stores\Abstracts\CacheStoreBase;
+use Back2Lobby\AccessControl\Stores\Abstracts\SessionStoreBase;
 
 class AccessControlService
 {
     private static Accessable $access;
 
-    public function __construct(Storable $store)
+    public function __construct(CacheStoreBase $cacheStore, SessionStoreBase $sessionStore)
     {
-        self::$access = new AccessService($store);
+        self::$access = new AccessService($cacheStore, $sessionStore);
     }
 
     public function __call($method_name, $args)
@@ -27,14 +28,19 @@ class AccessControlService
 
     private static function forwardCall($method_name, $args)
     {
-        if (method_exists(self::$access->getStore(), $method_name)) {
-            return call_user_func_array(
-                [self::$access->getStore(), $method_name],
-                $args
-            );
-        } elseif (method_exists(self::$access, $method_name)) {
+        if (method_exists(self::$access, $method_name)) {
             return call_user_func_array(
                 [self::$access, $method_name],
+                $args
+            );
+        } elseif (method_exists(self::$access->getCacheStore(), $method_name)) {
+            return call_user_func_array(
+                [self::$access->getCacheStore(), $method_name],
+                $args
+            );
+        } elseif (method_exists(self::$access->getSessionStore(), $method_name)) {
+            return call_user_func_array(
+                [self::$access->getSessionStore(), $method_name],
                 $args
             );
         }

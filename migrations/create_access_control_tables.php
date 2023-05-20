@@ -21,7 +21,7 @@ return new class extends Migration
             $table->unique(['name']);
         });
 
-        Schema::create('role_user', function (Blueprint $table) {
+        Schema::create('assigned_roles', function (Blueprint $table) {
 
             $table->unsignedBigInteger('role_id');
             $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
@@ -45,7 +45,7 @@ return new class extends Migration
             $table->unique(['name']);
         });
 
-        Schema::create('permission_role', function (Blueprint $table) {
+        Schema::create('assigned_permissions', function (Blueprint $table) {
             $table->unsignedBigInteger('role_id');
             $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
 
@@ -64,8 +64,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('roles');
-        Schema::dropIfExists('role_user');
+        Schema::dropIfExists('assigned_roles');
         Schema::dropIfExists('permissions');
-        Schema::dropIfExists('permission_role');
+        Schema::dropIfExists('assigned_permissions');
     }
 };
