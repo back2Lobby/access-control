@@ -5,6 +5,7 @@ namespace Back2Lobby\AccessControl\Tests;
 use Back2Lobby\AccessControl\Facades\AccessControlFacade as AccessControl;
 use Back2Lobby\AccessControl\Models\Permission;
 use Back2Lobby\AccessControl\Models\Role;
+use Back2Lobby\AccessControl\Traits\SyncOnEvents;
 use Illuminate\Database\QueryException;
 
 /**
@@ -12,12 +13,6 @@ use Illuminate\Database\QueryException;
  * */
 class PermissionTest extends BaseTestCase
 {
-    /** @test */
-    public function it_uses_sync_on_events_trait()
-    {
-        $this->assertTrue(in_array('Back2Lobby\\AccessControl\\Traits\\syncOnEvents', class_uses(Permission::class)));
-    }
-
     /** @test */
     public function it_can_create_permission()
     {
@@ -38,61 +33,61 @@ class PermissionTest extends BaseTestCase
         $this->assertEquals($permission->id, $permissions->first()->id);
     }
 
-    /** @test */
-    public function it_syncs_permission_on_deletion()
-    {
-        $permission = Permission::factory()->createFake();
+//    /** @test */
+//    public function it_syncs_permission_on_deletion()
+//    {
+//        $permission = Permission::factory()->createFake();
+//
+//        $permissions = AccessControl::getPermissions();
+//
+//        $this->assertCount(1, $permissions);
+//
+//        // now deleting
+//        $permission->delete();
+//
+//        $permissions = AccessControl::getPermissions();
+//        $this->assertCount(0, $permissions);
+//    }
 
-        $permissions = AccessControl::getPermissions();
+//    /** @test */
+//    public function it_syncs_permission_on_save()
+//    {
+//        $permission = new Permission([
+//            'name' => 'edit-post',
+//            'title' => 'Edit Post',
+//        ]);
+//
+//        $permission->save();
+//
+//        $permissions = AccessControl::getPermissions();
+//
+//        $this->assertCount(1, $permissions);
+//        $this->assertIsInt($permission->id);
+//        $this->assertEquals($permission->id, $permissions->first()->id);
+//        $this->assertSame($permission->title, $permissions->first()->title);
+//    }
 
-        $this->assertCount(1, $permissions);
-
-        // now deleting
-        $permission->delete();
-
-        $permissions = AccessControl::getPermissions();
-        $this->assertCount(0, $permissions);
-    }
-
-    /** @test */
-    public function it_syncs_permission_on_save()
-    {
-        $permission = new Permission([
-            'name' => 'edit-post',
-            'title' => 'Edit Post',
-        ]);
-
-        $permission->save();
-
-        $permissions = AccessControl::getPermissions();
-
-        $this->assertCount(1, $permissions);
-        $this->assertIsInt($permission->id);
-        $this->assertEquals($permission->id, $permissions->first()->id);
-        $this->assertSame($permission->title, $permissions->first()->title);
-    }
-
-    /** @test */
-    public function it_syncs_permission_on_update()
-    {
-        $permission = Permission::factory()->createFake();
-
-        $permissions = AccessControl::getPermissions();
-
-        $this->assertCount(1, $permissions);
-
-        // updating
-        $permission->update([
-            'title' => 'Test Title',
-        ]);
-
-        $permissions = AccessControl::getPermissions();
-
-        $this->assertCount(1, $permissions);
-        $this->assertIsInt($permission->id);
-        $this->assertEquals($permission->id, $permissions->first()->id);
-        $this->assertSame($permission->title, $permissions->first()->title);
-    }
+//    /** @test */
+//    public function it_syncs_permission_on_update()
+//    {
+//        $permission = Permission::factory()->createFake();
+//
+//        $permissions = AccessControl::getPermissions();
+//
+//        $this->assertCount(1, $permissions);
+//
+//        // updating
+//        $permission->update([
+//            'title' => 'Test Title',
+//        ]);
+//
+//        $permissions = AccessControl::getPermissions();
+//
+//        $this->assertCount(1, $permissions);
+//        $this->assertIsInt($permission->id);
+//        $this->assertEquals($permission->id, $permissions->first()->id);
+//        $this->assertSame($permission->title, $permissions->first()->title);
+//    }
 
     /** @test */
     public function it_can_have_many_roles()

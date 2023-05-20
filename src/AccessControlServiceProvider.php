@@ -4,8 +4,12 @@ namespace Back2Lobby\AccessControl;
 
 use Back2Lobby\AccessControl\Exceptions\InvalidRoleableException;
 use Back2Lobby\AccessControl\Facades\AccessControlFacade;
-use Back2Lobby\AccessControl\Store\StoreService;
+use Back2Lobby\AccessControl\Stores\CacheStore;
+use Back2Lobby\AccessControl\Stores\SessionStore;
+use Illuminate\Auth\Events\Authenticated;
 use Illuminate\Contracts\Auth\Access\Gate;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
@@ -17,16 +21,21 @@ class AccessControlServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton('access-control', function ($app) {
-            return new AccessControlService(StoreService::getInstance());
+            return new AccessControlService(CacheStore::getInstance(), SessionStore::getInstance());
         });
 
         // add migrations
         $this->publishMigrations();
 
         // setup check point
-        $this->app->make(Gate::class)->before(function () {
-            return $this->accessControlCheck(...func_get_args());
+        $this->app->make(Gate::class)->before(function (Model $user, $authority, array $arguments = []) {
+            return $this->accessControlCheck($user, $authority, $arguments);
         });
+
+        Event::listen(Authenticated::class, function (Authenticated $event) {
+            $this->app->get('access-control')?->getSessionStore()->setAuthUser($event->user);
+        });
+
     }
 
     /**

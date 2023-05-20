@@ -79,23 +79,35 @@ AccessControl::is($user)->a("manager",$company);
    composer require back2lobby/access-control
    ```
 
-2. Extend User model the model provided by AccessControl:
+2. Use the <i title="Back2Lobby\AccessControl\Traits\HasRoles">`HasRoles`</i> in the User Model:
 
    ```php
-   use Back2Lobby\AccessControl\Models\User as AccessControlUser;
-   class User extends AccessControlUser;
+   use Illuminate\Database\Eloquent\Factories\HasFactory;
+   use Illuminate\Foundation\Auth\User as Authenticatable;
+   use Back2Lobby\AccessControl\Traits\HasRoles;
+    
+   class User extends Authenticatable
    {
-       // code
+    use HasFactory, HasRoles
+   
+    // code here
    }
    ```
 
+[//]: # (   By default, `App\Models\User` is used as the User model for authentication and authorization, but you can always change it to any model in the service provider:)
+
+[//]: # (   ```php)
+
+[//]: # (   AccessControl::setAuthUserModel&#40;UserModel::class&#41;;)
+
+[//]: # (   ```)
 3. If you have a roleable model, then add AccessControl's trait to your roleable model:
 
    ```php
-   use Back2Lobby\AccessControl\Traits\isRoleable;
+   use Back2Lobby\AccessControl\Traits\roleable;
    class Post extends Model
    {
-       use isRoleable;
+       use roleable;
    }
    ```
 
@@ -601,7 +613,7 @@ AccessControl::resetUser($user);
 
 All roles and permissions are cached and refreshed automatically every 24 hours. This optimization improves performance and reduces unnecessary database queries. Note that user data is not cached as it can frequently change.
 
-You can manually sync all the roles and permissions with database with <i title="sync(SyncFlag $flag = SyncFlag::SyncAll): void">`sync`</i> method. For example:
+You can manually sync all the roles and permissions with database with <i title="sync(SyncFlag $flag = SyncFlag::Everything): void">`sync`</i> method. For example:
 
 ```php
 AccessControl::sync();
@@ -646,8 +658,8 @@ Similarly, to check roles and permissions in blade files, we can use Laravel bui
 	<button class="btn btn-danger">Ban User</button>
 @endcan
 
-@can('create-post',$post)
-	<a href="{{ route('post.create') }}">Create Post</a>
+@can('edit-post',$post)
+	<a href="{{ route('post.edit') }}">Edit Post</a>
 @endcan
 ```
 

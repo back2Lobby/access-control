@@ -5,16 +5,17 @@ namespace Back2Lobby\AccessControl\Facades;
 use Back2Lobby\AccessControl\Models\Permission;
 use Back2Lobby\AccessControl\Models\Role;
 use Back2Lobby\AccessControl\Models\User;
-use Back2Lobby\AccessControl\Service\AllowPermission;
-use Back2Lobby\AccessControl\Service\AssignRole;
-use Back2Lobby\AccessControl\Service\DisallowPermission;
-use Back2Lobby\AccessControl\Service\ForbidPermission;
-use Back2Lobby\AccessControl\Service\RetractRole;
-use Back2Lobby\AccessControl\Service\RolePermissionCheck;
-use Back2Lobby\AccessControl\Service\UserPermissionCheck;
-use Back2Lobby\AccessControl\Service\UserRoleCheck;
-use Back2Lobby\AccessControl\Store\Abstracts\Storable;
-use Back2Lobby\AccessControl\Store\Enumerations\SyncFlag;
+use Back2Lobby\AccessControl\Services\AllowPermission;
+use Back2Lobby\AccessControl\Services\AssignRole;
+use Back2Lobby\AccessControl\Services\DisallowPermission;
+use Back2Lobby\AccessControl\Services\ForbidPermission;
+use Back2Lobby\AccessControl\Services\RetractRole;
+use Back2Lobby\AccessControl\Services\RolePermissionCheck;
+use Back2Lobby\AccessControl\Services\UserPermissionCheck;
+use Back2Lobby\AccessControl\Services\UserRoleCheck;
+use Back2Lobby\AccessControl\Stores\Abstracts\CacheStoreBase;
+use Back2Lobby\AccessControl\Stores\Abstracts\SessionStoreBase;
+use Back2Lobby\AccessControl\Stores\Enumerations\SyncFlag;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Facade;
@@ -40,16 +41,17 @@ use Illuminate\Support\Facades\Facade;
  * @method static UserPermissionCheck|null canUser(User $user = null,$throwException = false)
  * @method static bool resetUser(User $user)
  * @method static bool resetRole(Role|string $role)
- * @method static Storable getStore()
+ * @method static CacheStoreBase getCacheStore()
+ * @method static SessionStoreBase getSessionStore()
  *
- * - From StoreService
- * @method static void sync(SyncFlag $flag = SyncFlag::SyncAll)
+ * - From CacheStore
+ * @method static void sync(SyncFlag $flag = SyncFlag::Everything)
  * @method static void cache()
  * @method static void clearCache()
  * @method static void reset()
  * @method static Collection getRoles()
  * @method static Collection getPermissions()
- * @method static Collection getMap()
+ * @method static Collection getMaps()
  * @method static Role|null getRole(Role|string|int $role)
  * @method static Permission|null getPermission(Permission|string|int $permission)
  * @method static Collection getAllPermissionsOf(Role $role)
@@ -68,8 +70,19 @@ use Illuminate\Support\Facades\Facade;
  * @method static Collection getIndirectlyForbiddenRolesOf(Permission $permission)
  * @method static bool canRoleDo(Role $role, Permission $permission)
  *
- * @see \Back2Lobby\AccessControl\Service\AccessService;
- * @see \Back2Lobby\AccessControl\Store\StoreService;
+ * - From SessionStore
+ * @method static void setAuthUser(Model $user)
+ * @method static Model|null getAuthUser()
+ * @method static void setAuthUserModel(string $modelClassName)
+ * @method static string getAuthUserModel()
+ * @method static bool isAuthUser(Model $user, bool $throwException = true)
+ * @method static bool isValidUser(Model $user,bool $throwException = true)
+ * @method static Collection|null getAssignedRoles()
+ * @method static void clearAssignedRoles()
+ * @method static void resetAuthUser()
+ *
+ * @see \Back2Lobby\AccessControl\Services\AccessService;
+ * @see \Back2Lobby\AccessControl\Stores\CacheStore;
  */
 class AccessControlFacade extends Facade
 {

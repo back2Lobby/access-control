@@ -6,13 +6,13 @@ use Back2Lobby\AccessControl\Exceptions\InvalidRoleableException;
 use Back2Lobby\AccessControl\Exceptions\InvalidUserException;
 use Back2Lobby\AccessControl\Facades\AccessControlFacade as AccessControl;
 use Back2Lobby\AccessControl\Models\Role;
-use Back2Lobby\AccessControl\Models\User;
 use Back2Lobby\AccessControl\Tests\Models\Company;
 use Back2Lobby\AccessControl\Tests\Models\Post;
+use Back2Lobby\AccessControl\Tests\Models\User;
 use Illuminate\Support\Facades\DB;
 
 /**
- * @coversDefaultClass \Back2Lobby\AccessControl\Service\AssignRole
+ * @coversDefaultClass \Back2Lobby\AccessControl\Services\AssignRole
  */
 class AssignRoleTest extends BaseTestCase
 {
@@ -31,7 +31,7 @@ class AssignRoleTest extends BaseTestCase
 
         $this->assertCount(1, User::whereIs($role)->get());
         $this->assertSame($user->id, User::whereIs($role)->first()->id);
-        $this->assertCount(1, DB::table('role_user')->get());
+        $this->assertCount(1, DB::table('assigned_roles')->get());
     }
 
     /**
@@ -53,7 +53,7 @@ class AssignRoleTest extends BaseTestCase
 
         $this->assertCount(1, User::whereIs($role, $post)->get());
         $this->assertSame($user->id, User::whereIs($role, $post)->first()->id);
-        $this->assertCount(1, DB::table('role_user')->get());
+        $this->assertCount(1, DB::table('assigned_roles')->get());
     }
 
     /**
@@ -68,10 +68,10 @@ class AssignRoleTest extends BaseTestCase
         $role = Role::factory()->createFake();
 
         $this->assertTrue(AccessControl::assign($role)->to($user));
-        $this->assertCount(1, $user->belongsToMany(Role::class)->where('id', $role->id)->get());
+        $this->assertCount(1, $user->belongsToMany(Role::class, 'assigned_roles')->where('id', $role->id)->get());
 
         $this->assertFalse(AccessControl::assign($role)->to($user));
-        $this->assertCount(1, $user->belongsToMany(Role::class)->where('id', $role->id)->get());
+        $this->assertCount(1, $user->belongsToMany(Role::class, 'assigned_roles')->where('id', $role->id)->get());
     }
 
     /**
@@ -99,7 +99,7 @@ class AssignRoleTest extends BaseTestCase
             AccessControl::assign($role2, $company)->to($user);
         });
 
-        $this->assertCount(0, $user->belongsToMany(Role::class)->get());
+        $this->assertCount(0, $user->belongsToMany(Role::class, 'assigned_roles')->get());
     }
 
     /**
@@ -107,14 +107,16 @@ class AssignRoleTest extends BaseTestCase
      *
      * @test
      */
-    public function it_throws_exception_if_user_or_id_passed_is_not_found_in_database()
+    public function it_throws_exception_if_user_passed_is_not_found_in_database()
     {
         $user = User::factory()->create();
         $role = Role::factory()->createFake();
 
-        $this->expectException(InvalidUserException::class);
-        AccessControl::assign($role)->to(999);
+        $emptyUser = new User();
 
-        $this->assertCount(0, $user->belongsToMany(Role::class)->get());
+        $this->expectException(InvalidUserException::class);
+        AccessControl::assign($role)->to($emptyUser);
+
+        $this->assertCount(0, $user->belongsToMany(Role::class, 'assigned_roles')->get());
     }
 }
