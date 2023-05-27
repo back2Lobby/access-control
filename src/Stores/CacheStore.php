@@ -39,14 +39,16 @@ class CacheStore extends CacheStoreBase
     public function cache(): void
     {
         // cache store data for 1 day
-        Cache::driver('array')->tags(['access-store'])->put('available_roles', $this->roles, (60 * 60) * 24);
-        Cache::driver('array')->tags(['access-store'])->put('available_permissions', $this->permissions, (60 * 60) * 24);
-        Cache::driver('array')->tags(['access-store'])->put('available_maps', $this->maps, (60 * 60) * 24);
+        Cache::driver(static::$cacheDriver)->put('available_roles', $this->roles, (60 * 60) * 24);
+        Cache::driver(static::$cacheDriver)->put('available_permissions', $this->permissions, (60 * 60) * 24);
+        Cache::driver(static::$cacheDriver)->put('available_maps', $this->maps, (60 * 60) * 24);
     }
 
     public function clearCache(): void
     {
-        Cache::driver('array')->tags(['access-store'])->flush();
+        Cache::driver(static::$cacheDriver)->forget('available_roles');
+        Cache::driver(static::$cacheDriver)->forget('available_permissions');
+        Cache::driver(static::$cacheDriver)->forget('available_maps');
     }
 
     public function reset(): void
@@ -58,16 +60,16 @@ class CacheStore extends CacheStoreBase
 
     public static function hasCached(): bool
     {
-        return Cache::driver('array')->tags(['access-store'])->has('available_roles') &&
-        Cache::driver('array')->tags(['access-store'])->has('available_permissions') &&
-        Cache::driver('array')->tags(['access-store'])->has('available_maps');
+        return Cache::driver(static::$cacheDriver)->has('available_roles') &&
+            Cache::driver(static::$cacheDriver)->has('available_permissions') &&
+            Cache::driver(static::$cacheDriver)->has('available_maps');
     }
 
     public function loadFromCache(): void
     {
-        $this->roles = Cache::driver('array')->tags(['access-store'])->get('available_roles');
-        $this->permissions = Cache::driver('array')->tags(['access-store'])->get('available_permissions');
-        $this->maps = Cache::driver('array')->tags(['access-store'])->get('available_maps');
+        $this->roles = Cache::driver(static::$cacheDriver)->get('available_roles');
+        $this->permissions = Cache::driver(static::$cacheDriver)->get('available_permissions');
+        $this->maps = Cache::driver(static::$cacheDriver)->get('available_maps');
     }
 
     public function getRoles(): Collection

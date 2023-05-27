@@ -12,6 +12,7 @@ use Back2Lobby\AccessControl\Models\Role;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 trait HasRoles
 {
@@ -38,8 +39,11 @@ trait HasRoles
      */
     public function permissions(): Collection
     {
+
+        $userColumnName = Str::singular(AccessControlFacade::getAuthUserTable()).'_id';
+
         // get all the roles of this users
-        $roles = AssignedRole::where('user_id', $this->getKey())->get(['role_id'])->pluck('role_id');
+        $roles = AssignedRole::where($userColumnName, $this->getKey())->get(['role_id'])->pluck('role_id');
 
         // get all the permission of each role
         $permissions = $roles->map(fn ($r) => AccessControlFacade::getRole($r))
@@ -66,8 +70,11 @@ trait HasRoles
 
             $roleable = Role::getValidRoleable($role, $roleable);
 
-            return static::select('users.*')
-                ->join('assigned_roles', 'assigned_roles.user_id', '=', 'users.id')
+            $userTableName = AccessControlFacade::getAuthUserTable();
+            $userColumnName = Str::singular($userTableName).'_id';
+
+            return static::select($userTableName.'.*')
+                ->join('assigned_roles', 'assigned_roles.'.$userColumnName, '=', $userTableName.'.id')
                 ->where(function ($q) use ($role, $roleable) {
                     $q->where('role_id', $role->id);
                     if (isset($roleable->id)) {
@@ -140,11 +147,14 @@ trait HasRoles
                 }
             });
 
+            $userTableName = AccessControlFacade::getAuthUserTable();
+            $userColumnName = Str::singular($userTableName).'_id';
+
             // return users by joining it with users table
-            return static::distinct()->select('users.*')->joinSub(
+            return static::distinct()->select($userTableName.'.*')->joinSub(
                 $usersQuery,
                 'matched_role_user',
-                fn ($j) => $j->on('matched_role_user.user_id', '=', 'users.id')
+                fn ($j) => $j->on('matched_role_user.'.$userColumnName, '=', $userTableName.'.id')
             );
         } else {
             throw new InvalidPermissionException('Provided permission cannot be validated because its either invalid or not found in database');

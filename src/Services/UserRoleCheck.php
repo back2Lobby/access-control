@@ -104,16 +104,20 @@ class UserRoleCheck
         if ($this->isValidRolesArray($roles)) {
             if (AccessControlFacade::isAuthUser($this->user, true)) {
                 $assignedRoleIds = AccessControlFacade::getAssignedRoles()
-                                    ->map(fn ($assignedRole) => $assignedRole->role_id);
+                    ->map(fn ($assignedRole) => $assignedRole->role_id);
+
+                if (is_null($assignedRoleIds)) {
+                    return false;
+                }
 
                 return count($roles) === count($assignedRoleIds) &&
                     collect($roles)->every(function ($roleName) use ($assignedRoleIds) {
-                    if ($role = AccessControlFacade::getRole($roleName)) {
-                        return in_array($role->id, $assignedRoleIds);
-                    }
+                        if ($role = AccessControlFacade::getRole($roleName)) {
+                            return in_array($role->id, $assignedRoleIds->toArray());
+                        }
 
-                    return false;
-                });
+                        return false;
+                    });
             } else {
                 return $this->user->belongsToMany(Role::class, 'assigned_roles')->whereIn('name', $roles)->count() === count($roles);
             }
@@ -138,13 +142,17 @@ class UserRoleCheck
                 $assignedRoleIds = AccessControlFacade::getAssignedRoles()
                     ->map(fn ($assignedRole) => $assignedRole->role_id);
 
-                return collect($roles)->some(function ($roleName) use ($assignedRoleIds) {
-                        if ($role = AccessControlFacade::getRole($roleName)) {
-                            return in_array($role->id, $assignedRoleIds);
-                        }
+                if (is_null($assignedRoleIds)) {
+                    return false;
+                }
 
-                        return false;
-                    });
+                return collect($roles)->some(function ($roleName) use ($assignedRoleIds) {
+                    if ($role = AccessControlFacade::getRole($roleName)) {
+                        return in_array($role->id, $assignedRoleIds->toArray());
+                    }
+
+                    return false;
+                });
             } else {
                 return $this->user->belongsToMany(Role::class, 'assigned_roles')->whereIn('name', $roles)->count() > 0;
             }
@@ -160,7 +168,7 @@ class UserRoleCheck
                 return true;
             } else {
                 throw new InvalidAttributesException('Only array of string role names is allowed');
-                }
+            }
         }
 
         return false;

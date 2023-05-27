@@ -1,8 +1,10 @@
 <?php
 
+use Back2Lobby\AccessControl\Facades\AccessControlFacade as AccessControl;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 return new class extends Migration
 {
@@ -11,6 +13,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+
+        $userTableName = AccessControl::getAuthUserTable();
+        $userTableNameSingular = Str::singular($userTableName);
+
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -21,18 +27,18 @@ return new class extends Migration
             $table->unique(['name']);
         });
 
-        Schema::create('assigned_roles', function (Blueprint $table) {
+        Schema::create('assigned_roles', function (Blueprint $table) use ($userTableName, $userTableNameSingular) {
 
             $table->unsignedBigInteger('role_id');
             $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
 
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger($userTableNameSingular.'_id');
+            $table->foreign($userTableNameSingular.'_id')->references('id')->on($userTableName)->onDelete('cascade');
 
             $table->string('roleable_type')->default('');
             $table->unsignedBigInteger('roleable_id')->default(0);
 
-            $table->unique(['role_id', 'user_id', 'roleable_id', 'roleable_type']);
+            $table->unique(['role_id', $userTableNameSingular.'_id', 'roleable_id', 'roleable_type']);
         });
 
         Schema::create('permissions', function (Blueprint $table) {

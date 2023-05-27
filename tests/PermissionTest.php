@@ -5,7 +5,6 @@ namespace Back2Lobby\AccessControl\Tests;
 use Back2Lobby\AccessControl\Facades\AccessControlFacade as AccessControl;
 use Back2Lobby\AccessControl\Models\Permission;
 use Back2Lobby\AccessControl\Models\Role;
-use Back2Lobby\AccessControl\Traits\SyncOnEvents;
 use Illuminate\Database\QueryException;
 
 /**

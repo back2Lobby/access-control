@@ -119,14 +119,14 @@ class AccessServiceTest extends BaseTestCase
     public function it_throws_exception_when_invalid_attributes_are_provided_to_create_a_role(array $role, string $expectedErrorMessage = null, \Closure $init = null)
     {
         if ($init) {
-        $init();
+            $init($this);
         }
         $this->assertException(InvalidAttributesException::class, function () use ($role) {
             $this->getAccessService()->createRole($role);
         }, $expectedErrorMessage);
     }
 
-    public function createRoleProvider(): array
+    public static function createRoleProvider(): array
     {
         return [
             'Required Name' => [
@@ -148,7 +148,7 @@ class AccessServiceTest extends BaseTestCase
             'Unique Name' => [
                 ['name' => 'admin', 'title' => 'New Admin'],
                 'The name has already been taken.',
-                fn () => $this->getAccessService()->createRole(['name' => 'admin', 'title' => 'Admin']),
+                fn ($_this) => $_this->getAccessService()->createRole(['name' => 'admin', 'title' => 'Admin']),
             ],
             'Non Array Roleables' => [
                 ['name' => 'editor', 'title' => 'Editor', 'roleables' => 34],
@@ -213,14 +213,14 @@ class AccessServiceTest extends BaseTestCase
     public function it_throws_exception_when_invalid_attributes_are_passed_while_creating_many_roles_at_once(array $roles, string $expectedErrorMessage = null, \Closure $init = null)
     {
         if ($init) {
-        $init();
+            $init($this);
         }
         $this->assertException(InvalidAttributesException::class, function () use ($roles) {
             $this->getAccessService()->createManyRoles($roles);
         }, $expectedErrorMessage);
     }
 
-    public function createManyRolesProvider(): array
+    public static function createManyRolesProvider(): array
     {
         return [
             'Empty Roles Array' => [
@@ -254,7 +254,7 @@ class AccessServiceTest extends BaseTestCase
                     ['name' => 'editor', 'title' => 'New Editor'],
                 ],
                 'The roles.1.name has already been taken.',
-                fn () => $this->getAccessService()->createRole(['name' => 'editor', 'title' => 'Editor']),
+                fn ($_this) => $_this->getAccessService()->createRole(['name' => 'editor', 'title' => 'Editor']),
             ],
             'Duplicate Role Name' => [
                 [
@@ -356,7 +356,7 @@ class AccessServiceTest extends BaseTestCase
         }, $expectedErrorMessage);
     }
 
-    public function updateRoleProvider(): array
+    public static function updateRoleProvider(): array
     {
         return [
             'Only String Name' => [
@@ -370,7 +370,7 @@ class AccessServiceTest extends BaseTestCase
             'Unique Name' => [
                 ['name' => 'admin', 'title' => 'New Admin'],
                 'The name has already been taken.',
-                fn () => $this->getAccessService()->createRole(['name' => 'admin', 'title' => 'Admin']),
+                fn ($_this) => $_this->getAccessService()->createRole(['name' => 'admin', 'title' => 'Admin']),
             ],
             'Non Array Roleables' => [
                 ['roleables' => 34],
@@ -483,7 +483,7 @@ class AccessServiceTest extends BaseTestCase
     public function it_throws_exception_when_invalid_attributes_are_provided_to_create_a_permission(array $permission, string $expectedErrorMessage = null, \Closure $init = null)
     {
         if ($init) {
-        $init();
+            $init();
         }
 
         $this->assertException(InvalidAttributesException::class, function () use ($permission) {
@@ -491,7 +491,7 @@ class AccessServiceTest extends BaseTestCase
         }, $expectedErrorMessage);
     }
 
-    public function createPermissionProvider(): array
+    public static function createPermissionProvider(): array
     {
         return [
             'Required Name' => [
@@ -568,7 +568,7 @@ class AccessServiceTest extends BaseTestCase
     public function it_throws_exception_when_invalid_attributes_are_passed_while_creating_many_permissions_at_once(array $permissions, string $expectedErrorMessage = null, \Closure $init = null)
     {
         if ($init) {
-        $init();
+            $init($this);
         }
 
         $this->assertException(InvalidAttributesException::class, function () use ($permissions) {
@@ -576,7 +576,7 @@ class AccessServiceTest extends BaseTestCase
         }, $expectedErrorMessage);
     }
 
-    public function createManyPermissionsProvider(): array
+    public static function createManyPermissionsProvider(): array
     {
         return [
             'Empty Permissions Array' => [
@@ -610,7 +610,7 @@ class AccessServiceTest extends BaseTestCase
                     ['name' => 'delete-post', 'title' => 'New Delete Post'],
                 ],
                 'The permissions.1.name has already been taken.',
-                fn () => $this->getAccessService()->createPermission(['name' => 'delete-post', 'title' => 'Delete Post']),
+                fn ($_this) => $_this->getAccessService()->createPermission(['name' => 'delete-post', 'title' => 'Delete Post']),
             ],
             'Duplicate Permission Name' => [
                 [
@@ -679,7 +679,7 @@ class AccessServiceTest extends BaseTestCase
     public function it_throws_exception_when_invalid_attributes_are_provided_to_update_a_permission(array $attributes, string $expectedErrorMessage = null, \Closure $init = null)
     {
         if ($init) {
-        $init();
+            $init();
         }
 
         $permission = $this->getAccessService()->createPermission([
@@ -692,7 +692,7 @@ class AccessServiceTest extends BaseTestCase
         }, $expectedErrorMessage);
     }
 
-    public function updatePermissionDataProvider(): array
+    public static function updatePermissionDataProvider(): array
     {
         return [
             'Only String Name' => [

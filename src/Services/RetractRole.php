@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class RetractRole implements Retractable
 {
@@ -21,11 +22,14 @@ class RetractRole implements Retractable
         if (AccessControlFacade::isValidUser($user, true)) {
             $this->roleable = Role::getValidRoleable($this->role, $this->roleable);
             try {
+
+                $userColumnName = Str::singular(AccessControlFacade::getAuthUserTable()).'_id';
+
                 if (is_null($this->roleable)) {
-                    $query = DB::table('assigned_roles')->where(['user_id' => $user->id, 'role_id' => $this->role->id, 'roleable_id' => 0, 'roleable_type' => ''])->delete();
+                    $query = DB::table('assigned_roles')->where([$userColumnName => $user->id, 'role_id' => $this->role->id, 'roleable_id' => 0, 'roleable_type' => ''])->delete();
                 } else {
                     $query = DB::table('assigned_roles')->where([
-                        'user_id' => $user->id,
+                        $userColumnName => $user->id,
                         'role_id' => $this->role->id,
                         'roleable_id' => $this->roleable->id,
                         'roleable_type' => $this->roleable::class,

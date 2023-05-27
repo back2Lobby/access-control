@@ -75,6 +75,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static Model|null getAuthUser()
  * @method static void setAuthUserModel(string $modelClassName)
  * @method static string getAuthUserModel()
+ * @method static string getAuthUserTable()
  * @method static bool isAuthUser(Model $user, bool $throwException = true)
  * @method static bool isValidUser(Model $user,bool $throwException = true)
  * @method static Collection|null getAssignedRoles()

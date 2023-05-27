@@ -2,6 +2,7 @@
 
 namespace Back2Lobby\AccessControl\Stores\Abstracts;
 
+use Back2Lobby\AccessControl\Exceptions\InvalidCacheDriverException;
 use Back2Lobby\AccessControl\Models\Permission;
 use Back2Lobby\AccessControl\Models\Role;
 use Back2Lobby\AccessControl\Stores\Contracts\Storable;
@@ -12,8 +13,11 @@ abstract class CacheStoreBase implements Storable
 {
     private static CacheStoreBase $store;
 
+    protected static string $cacheDriver = 'file';
+
     private function __construct()
     {
+        $this->setupCacheDriver();
     }
 
     public static function getInstance(): CacheStoreBase
@@ -35,6 +39,21 @@ abstract class CacheStoreBase implements Storable
 
     private function __clone()
     {
+    }
+
+    /**
+     * Setup cache driver using config while making sure its valid
+     */
+    private function setupCacheDriver(): void
+    {
+        // setup cache driver
+        $cacheDriver = config('access.cache_driver') ?? 'file';
+
+        if (! array_key_exists($cacheDriver, config('cache.stores'))) {
+            throw new InvalidCacheDriverException("Given cache driver $cacheDriver is invalid");
+        }
+
+        static::$cacheDriver = $cacheDriver;
     }
 
     /**

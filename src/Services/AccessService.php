@@ -16,6 +16,7 @@ use Back2Lobby\AccessControl\Stores\Enumerations\SyncFlag;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class AccessService implements Accessable
 {
@@ -71,7 +72,7 @@ class AccessService implements Accessable
             'roles.*.name' => ['required', 'string', 'unique:roles,name', function ($attribute, $value, $fail) use ($roles) {
                 //make sure name is unique among other names in roles array
                 if (count(array_filter($roles, fn ($r) => isset($r['name']) && $r['name'] === $value)) !== 1) {
-                 $fail('Duplicate roles passed. Please make sure role name is unique.');
+                    $fail('Duplicate roles passed. Please make sure role name is unique.');
                 }
             }],
             'roles.*.title' => 'required|string',
@@ -337,7 +338,10 @@ class AccessService implements Accessable
         $result = false;
 
         if ($this->getSessionStore()->isValidUser($user)) {
-            $result = DB::table('assigned_roles')->where('user_id', $user->id)->delete() >= 0;
+
+            $userColumnName = Str::singular($this->getSessionStore()->getAuthUserTable()).'_id';
+
+            $result = DB::table('assigned_roles')->where($userColumnName, $user->id)->delete() >= 0;
 
             // reset the loaded user roles
             $this->getSessionStore()->clearAssignedRoles();
