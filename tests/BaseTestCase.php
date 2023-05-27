@@ -18,6 +18,7 @@ abstract class BaseTestCase extends OrchestraTestCase
 
     protected function setUp(): void
     {
+
         parent::setUp();
 
         // specifying custom factories locations
@@ -42,7 +43,6 @@ abstract class BaseTestCase extends OrchestraTestCase
         AccessControlFacade::reset();
 
         // set the user model of auth
-        AccessControlFacade::setAuthUserModel(User::class);
         AccessControlFacade::clearAssignedRoles();
         AccessControlFacade::resetAuthUser();
     }
@@ -73,6 +73,12 @@ abstract class BaseTestCase extends OrchestraTestCase
 
     protected function defineDatabaseMigrations()
     {
+        // load the config file
+        $this->app->get('config')->set('access', require __DIR__.'./../config/access.php');
+
+        // set the user model for testing
+        config()->set('access.auth_user_model', User::class);
+
         $this->loadLaravelMigrations(['--database' => 'testbench']);
         $this->loadMigrationsFrom(dirname(__DIR__, 1).'/migrations');
         $this->loadMigrationsFrom(__DIR__.'/Migrations');
@@ -114,11 +120,11 @@ abstract class BaseTestCase extends OrchestraTestCase
     public function assertSameArray(array|Collection $array1, array|Collection $array2): void
     {
         if (count($array1) !== count($array2)) {
-        self::fail('Failed asserting that both arrays are same because they have different length');
+            self::fail('Failed asserting that both arrays are same because they have different length');
         }
 
         if (collect($array1)->diff($array2)->count() !== 0) {
-        self::fail('Failed asserting that both arrays are same');
+            self::fail('Failed asserting that both arrays are same');
         }
 
         $this->assertSame(true, true);

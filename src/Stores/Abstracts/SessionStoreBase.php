@@ -37,15 +37,20 @@ abstract class SessionStoreBase implements Storable
      */
     abstract public function getAuthUser(): Model|null;
 
-    /**
-     * Specify class for authenticated user object
-     */
-    abstract public function setAuthUserModel(string $modelClassName): void;
+    // /**
+    //  * Specify class for authenticated user object
+    //  */
+    // abstract public function setAuthUserModel(string $modelClassName): void;
 
     /**
      * Get the specified class for authenticated user object
      */
     abstract public function getAuthUserModel(): string;
+
+    /**
+     * Get the table name being used by the auth user model
+     */
+    abstract public function getAuthUserTable(): string;
 
     /**
      * Check if the given user is currently authenticated or not

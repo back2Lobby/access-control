@@ -9,33 +9,50 @@ use Back2Lobby\AccessControl\Stores\SessionStore;
 use Illuminate\Auth\Events\Authenticated;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class AccessControlServiceProvider extends ServiceProvider
 {
+    public function provides(): array
+    {
+        return ['access-control'];
+    }
+
     /**
      * Register services.
      */
     public function register(): void
     {
-        $this->app->singleton('access-control', function ($app) {
-            return new AccessControlService(CacheStore::getInstance(), SessionStore::getInstance());
-        });
+    }
+
+    public function boot(): void
+    {
 
         // add migrations
         $this->publishMigrations();
+
+        // add configs
+        $this->publishConfigs();
+
+        // if (!App::runningInConsole()) {
+        // create singleton
+        $this->app->singleton('access-control', function ($app) {
+            return new AccessControlService(CacheStore::getInstance(), SessionStore::getInstance());
+        });
 
         // setup check point
         $this->app->make(Gate::class)->before(function (Model $user, $authority, array $arguments = []) {
             return $this->accessControlCheck($user, $authority, $arguments);
         });
 
+        // set currently auth user in session store
         Event::listen(Authenticated::class, function (Authenticated $event) {
             $this->app->get('access-control')?->getSessionStore()->setAuthUser($event->user);
         });
-
+        // }
     }
 
     /**
@@ -50,6 +67,13 @@ class AccessControlServiceProvider extends ServiceProvider
         $target = $this->app->databasePath().'/migrations/'.$timestamp.'_create_access_control_tables.php';
 
         $this->publishes([$stub => $target], 'access-control.migrations');
+    }
+
+    protected function publishConfigs(): void
+    {
+        $this->publishes([
+            __DIR__.'/../config/access.php' => $this->app->configPath().'/access.php',
+        ], 'access-control.config');
     }
 
     /**

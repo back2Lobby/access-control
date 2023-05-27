@@ -10,6 +10,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class AssignRole implements Assignable
 {
@@ -22,11 +23,14 @@ class AssignRole implements Assignable
         if (AccessControlFacade::getSessionStore()->isValidUser($user, true)) {
             $this->roleable = Role::getValidRoleable($this->role, $this->roleable);
             try {
+
+                $userColumnName = Str::singular(AccessControlFacade::getAuthUserTable()).'_id';
+
                 if (is_null($this->roleable)) {
-                    $query = DB::table('assigned_roles')->insert(['user_id' => $user->id, 'role_id' => $this->role->id]);
+                    $query = DB::table('assigned_roles')->insert([$userColumnName => $user->id, 'role_id' => $this->role->id]);
                 } else {
                     $query = DB::table('assigned_roles')->insert([
-                        'user_id' => $user->id,
+                        $userColumnName => $user->id,
                         'role_id' => $this->role->id,
                         'roleable_id' => $this->roleable->id,
                         'roleable_type' => $this->roleable::class,

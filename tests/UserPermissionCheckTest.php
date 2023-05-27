@@ -6,7 +6,6 @@ use Back2Lobby\AccessControl\Facades\AccessControlFacade as AccessControl;
 use Back2Lobby\AccessControl\Models\Permission;
 use Back2Lobby\AccessControl\Models\Role;
 use Back2Lobby\AccessControl\Tests\Models\User;
-use Illuminate\Support\Facades\DB;
 
 /**
  * @coversDefaultClass \Back2Lobby\AccessControl\Services\UserPermissionCheck

@@ -4,7 +4,7 @@ namespace Back2Lobby\AccessControl\Traits;
 
 use Back2Lobby\AccessControl\Exceptions\InvalidPermissionException;
 use Back2Lobby\AccessControl\Exceptions\InvalidUserException;
-use Back2Lobby\AccessControl\Facades\AccessControlFacade;
+use Back2Lobby\AccessControl\Facades\AccessControlFacade as AccessControl;
 use Back2Lobby\AccessControl\Models\AssignedRole;
 use Back2Lobby\AccessControl\Models\Permission;
 use Back2Lobby\AccessControl\Models\Role;
@@ -32,7 +32,7 @@ trait Roleable
         $permission = $permission instanceof Permission ? $permission->name : $permission;
 
         if (is_string($permission)) {
-            return AccessControlFacade::getAuthUserModel()::whereCan($permission, $this, $includeIndirectUsers);
+            return AccessControl::getAuthUserModel()::whereCan($permission, $this, $includeIndirectUsers);
         } else {
             throw new InvalidPermissionException("Provided permission $permission cannot be validated because its either invalid or not found in database");
         }
@@ -43,7 +43,7 @@ trait Roleable
      */
     public function users(): Builder
     {
-        return AccessControlFacade::getAuthUserModel()::select('users.*')->joinSub(AssignedRole::where('roleable_id', $this->id)->where('roleable_type', $this::class), 'matched_role_user', function ($join) {
+        return AccessControl::getAuthUserModel()::select(AccessControl::getAuthUserTable().'.*')->joinSub(AssignedRole::where('roleable_id', $this->id)->where('roleable_type', $this::class), 'matched_role_user', function ($join) {
             $join->on('users.id', '=', 'matched_role_user.user_id');
         });
     }
@@ -55,7 +55,7 @@ trait Roleable
      */
     public function usersWithRoles(): Collection
     {
-        return AccessControlFacade::getAuthUserModel()::select('users.*', 'roles.id as role_id')
+        return AccessControl::getAuthUserModel()::select('users.*', 'roles.id as role_id')
             ->join('assigned_roles', 'users.id', '=', 'assigned_roles.user_id')
             ->join('roles', 'assigned_roles.role_id', '=', 'roles.id')
             ->where('assigned_roles.roleable_id', $this->id)
@@ -66,7 +66,7 @@ trait Roleable
             ->map(function ($group) {
                 $user = $group->first();
                 $roles = $group->pluck('role_id');
-                $user->roles = $roles->map(fn ($r) => AccessControlFacade::getRole($r))->filter(fn ($r) => ! is_null($r));
+                $user->roles = $roles->map(fn ($r) => AccessControl::getRole($r))->filter(fn ($r) => ! is_null($r));
                 unset($user->role_id);
 
                 return $user;
@@ -83,25 +83,25 @@ trait Roleable
      */
     public static function whereUserCan(Model $user, Permission|string $permission): Builder
     {
-        if (! AccessControlFacade::isValidUser($user, true)) {
+        if (! AccessControl::isValidUser($user, true)) {
             throw new InvalidUserException('Given user is not valid');
         }
 
         // getting a valid permission first
-        if ($permission = AccessControlFacade::getPermission($permission)) {
+        if ($permission = AccessControl::getPermission($permission)) {
 
             // get all the roles that are allowed for this permission
-            $allowedRoles = AccessControlFacade::getAllowedRolesOf($permission);
+            $allowedRoles = AccessControl::getAllowedRolesOf($permission);
 
             // no need to go any further if no role can have this permission
             if ($allowedRoles->count() <= 0) {
-            return static::whereIn('id', []);
+                return static::whereIn('id', []);
             }
 
             // now if there is any role that can have this permission, we will match them with roles that the user have
             $roles = AssignedRole::where('user_id', $user->id)
-                        ->whereIn('role_id', $allowedRoles->pluck('id'))
-                        ->where('roleable_type', static::class)->where('roleable_id', '!=', 0)->select(['roleable_id as id'])->get()->pluck('id');
+                ->whereIn('role_id', $allowedRoles->pluck('id'))
+                ->where('roleable_type', static::class)->where('roleable_id', '!=', 0)->select(['roleable_id as id'])->get()->pluck('id');
 
             return static::whereIn('id', $roles);
         } else {

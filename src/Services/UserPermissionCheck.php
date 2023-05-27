@@ -7,14 +7,13 @@ use Back2Lobby\AccessControl\Models\AssignedRole;
 use Back2Lobby\AccessControl\Models\Permission;
 use Back2Lobby\AccessControl\Stores\Abstracts\CacheStoreBase;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class UserPermissionCheck
 {
     public function __construct(private readonly CacheStoreBase $store, private readonly Model $user)
     {
     }
-
-
 
     /**
      * Check if user have a specific permission for given roleable e.g. can user delete a company
@@ -31,22 +30,25 @@ class UserPermissionCheck
         if (AccessControlFacade::isAuthUser($this->user)) {
             $assignedRoles = AccessControlFacade::getAssignedRoles();
 
-            if($roleable && $roleable->id){
-                $assignedRoles = $assignedRoles->filter(function($assignedRole) use($roleable){
+            $suitableAssignedRoles = $assignedRoles->filter(function ($assignedRole) {
+                return $assignedRole->roleable_id === 0 && $assignedRole->roleable_type === '';
+            });
+
+            if ($roleable && $roleable->id) {
+                $suitableAssignedRoles = $suitableAssignedRoles->concat($assignedRoles->filter(function ($assignedRole) use ($roleable) {
                     return $assignedRole->roleable_id === $roleable->id && $assignedRole->roleable_type === $roleable::class;
-                });
-            }else{
-                $assignedRoles = $assignedRoles->filter(function($assignedRole) use($roleable){
-                    return $assignedRole->roleable_id === 0 && $assignedRole->roleable_type === '';
-                });
+                }));
             }
 
-            $roleIds = $assignedRoles->map(function ($assignedRole){
+            $roleIds = $suitableAssignedRoles->map(function ($assignedRole) {
                 return $assignedRole->role_id;
             });
-        }else{
+        } else {
+
+            $userColumnName = Str::singular(AccessControlFacade::getAuthUserTable()).'_id';
+
             //get all the roles of user from database
-            $roles = AssignedRole::where('user_id', $this->user->getKey());
+            $roles = AssignedRole::where($userColumnName, $this->user->getKey());
 
             // filter by roleable if its provided otherwise get all roles
             $roles->where(function ($q) use ($roleable) {
@@ -69,55 +71,14 @@ class UserPermissionCheck
         // return true if any of the roles have the permission
         return $roleIds->some(function ($role) use ($permission, $roleable) {
 
-           $role = $this->store->getRole($role);
+            $role = $this->store->getRole($role);
 
-           // validate the roles and if it's a special role like admin then skip validation
-           if ($role && (is_null($role->roleables) || (is_array($role->roleables) && $roleable && in_array($roleable::class, $role->roleables)))) {
-            return $this->store->canRoleDo($role, $permission);
-           }
+            // validate the roles and if it's a special role like admin then skip validation
+            if ($role && (is_null($role->roleables) || (is_array($role->roleables) && $roleable && in_array($roleable::class, $role->roleables)))) {
+                return $this->store->canRoleDo($role, $permission);
+            }
 
-           return false;
+            return false;
         });
     }
-
-//    public function do(Permission|string $permission, Model $roleable = null): bool
-//    {
-//        // no need to do anything if permission isn't available
-//        if (! $permission = $this->store->getPermission($permission)) {
-//            return false;
-//        }
-//
-//        //get all the roles of user from database
-//        $roles = AssignedRole::where('user_id', $this->user->getKey());
-//
-//        // filter by roleable if its provided otherwise get all roles
-//        $roles->where(function ($q) use ($roleable) {
-//            if ($roleable && $roleable->id) {
-//                $q->where(function ($qq) use ($roleable) {
-//                    $qq->where('roleable_type', $roleable::class)->where('roleable_id', $roleable->id);
-//                });
-//            }
-//
-//            // get all roles where there is no roleable, so we can figure out if user has special roles like admin
-//            $q->orWhere(function ($qq) {
-//                $qq->where('roleable_type', '')->where('roleable_id', 0);
-//            });
-//        });
-//
-//        // get by only columns that we need
-//        $roles = $roles->select(['role_id as id'])->get()->pluck('id');
-//
-//        // return true if any of the roles have the permission
-//        return $roles->some(function ($role) use ($permission, $roleable) {
-//
-//           $role = $this->store->getRole($role);
-//
-//           // validate the roles and if it's a special role like admin then skip validation
-//           if ($role && (is_null($role->roleables) || (is_array($role->roleables) && $roleable && in_array($roleable::class, $role->roleables)))) {
-//            return $this->store->canRoleDo($role, $permission);
-//           }
-//
-//           return false;
-//        });
-//    }
 }

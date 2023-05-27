@@ -44,6 +44,7 @@ AccessControl is a Laravel package for easy role & permission management with mo
   - [Authorization](#authorization)
   - [Blade Directive](#blade-directive)
   - [Middleware](#middleware)
+  - [Custom User Model](#custom-user-model)
   </p></details>
 
 ## Introduction
@@ -93,21 +94,14 @@ AccessControl::is($user)->a("manager",$company);
     // code here
    }
    ```
-
-[//]: # (   By default, `App\Models\User` is used as the User model for authentication and authorization, but you can always change it to any model in the service provider:)
-
-[//]: # (   ```php)
-
-[//]: # (   AccessControl::setAuthUserModel&#40;UserModel::class&#41;;)
-
-[//]: # (   ```)
+	If you want to use custom user model instead of `App\Models\User`, head over to [Custom User Model](#custom-user-model) section.
 3. If you have a roleable model, then add AccessControl's trait to your roleable model:
 
    ```php
-   use Back2Lobby\AccessControl\Traits\roleable;
+   use Back2Lobby\AccessControl\Traits\Roleable;
    class Post extends Model
    {
-       use roleable;
+       use Roleable;
    }
    ```
 
@@ -637,6 +631,8 @@ Manually caching the store can be achieved using <i title="cache(): void">`cache
 AccessControl::cache();
 ```
 
+> Note: By default, `file` is used as the cache driver, but it can be changed in `access.php` config file.
+
 ### Authorization
 To check roles and permissions in blade files, we can use Laravel built in `can` method on the user model. For Example: 
 ```php
@@ -663,6 +659,14 @@ Similarly, to check roles and permissions in blade files, we can use Laravel bui
 @endcan
 ```
 
+### Config File
+Access Control provides a configuration file that can be used to configure the behaviour of the package including specifying cache driver and custom user model.
+
+You can publish the config file `access.php` using the command:
+```
+php artisan vendor:publish --tag="access-control.config"
+```
+
 ### Middleware
 Similarly, built in `can` middleware from Laravel as:
 ```php
@@ -680,3 +684,32 @@ Route::get('/posts/{post}/edit', function () {
 ```
 In this case, `Post::class` is passed to specify the model class for which the permission check should be performed. Note that this will only work if the route has route model binding for the Post model.
 
+### Custom User Model
+By default, `App\Models\User` model is used for authorization and authentication for this package. To use custom model instead, following steps are needed:
+- Specify the model in `access.php`. For Example,
+```php
+'auth_user_model' => CustomUserModel::class
+```
+- Make sure your custom user model extends `Illuminate\Foundation\Auth\User`.
+- Migrate the database tables related to the package or just use this command to get a fresh database.
+```
+php artisan migrate:fresh
+```
+- Note: Make sure you have specified the new auth model for the guard in `auth.php` config file. For Example,
+```php
+
+	'guards' => [
+		'web' => [
+			'driver' => 'session',
+			'provider' => 'customUsers',
+		],
+	],
+
+	'providers' => [
+		'customUsers' => [
+			'driver' => 'eloquent',
+			'model' => App\Models\CustomUserModel::class,
+		],
+	],
+
+```

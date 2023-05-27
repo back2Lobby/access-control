@@ -9,7 +9,6 @@ use Back2Lobby\AccessControl\Models\Role;
 use Back2Lobby\AccessControl\Tests\Models\Company;
 use Back2Lobby\AccessControl\Tests\Models\Post;
 use Back2Lobby\AccessControl\Tests\Models\User;
-use Back2Lobby\AccessControl\Traits\SyncOnEvents;
 use Illuminate\Database\QueryException;
 
 /**
@@ -17,7 +16,6 @@ use Illuminate\Database\QueryException;
  * */
 class RoleTest extends BaseTestCase
 {
-
     /**
      * @covers \Back2Lobby\AccessControl\Models\Role
      *
