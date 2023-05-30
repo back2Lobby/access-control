@@ -78,6 +78,10 @@ class AccessService implements Accessable
             'roles.*.title' => 'required|string',
             'roles.*.roleables' => 'array|nullable',
             'roles.*.roleables.*' => 'string|distinct',
+        ], [], [
+            'roles.*.name' => 'role #:position name',
+            'roles.*.title' => 'role #:position title',
+            'roles.*.roleables' => 'role #:position roleables',
         ]);
 
         if ($validator->stopOnFirstFailure()->fails()) {
@@ -166,6 +170,10 @@ class AccessService implements Accessable
             }],
             'permissions.*.title' => 'required|string',
             'permissions.*.description' => 'string|nullable',
+        ], [], [
+            'permissions.*.name' => 'permission #:position name',
+            'permissions.*.title' => 'permission #:position title',
+            'permissions.*.description' => 'permission #:position description',
         ]);
 
         if ($validator->stopOnFirstFailure()->fails()) {

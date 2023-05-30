@@ -232,28 +232,28 @@ class AccessServiceTest extends BaseTestCase
                     ['name' => 'admin', 'title' => 'admin'],
                     ['title' => 'Super Admin'],
                 ],
-                'The roles.1.name field is required.',
+                'The role #2 name field is required.',
             ],
             'Only String Role Name' => [
                 [
                     ['name' => 'admin', 'title' => 'admin'],
                     ['name' => 34, 'title' => 'Super Admin'],
                 ],
-                'The roles.1.name field must be a string.',
+                'The role #2 name field must be a string.',
             ],
             'Only String Role Title' => [
                 [
                     ['name' => 'admin', 'title' => 'admin'],
                     ['name' => 'super admin', 'title' => 829],
                 ],
-                'The roles.1.title field must be a string.',
+                'The role #2 title field must be a string.',
             ],
             'Unique Role Name' => [
                 [
                     ['name' => 'admin', 'title' => 'Admin'],
                     ['name' => 'editor', 'title' => 'New Editor'],
                 ],
-                'The roles.1.name has already been taken.',
+                'The role #2 name has already been taken.',
                 fn ($_this) => $_this->getAccessService()->createRole(['name' => 'editor', 'title' => 'Editor']),
             ],
             'Duplicate Role Name' => [
@@ -268,7 +268,7 @@ class AccessServiceTest extends BaseTestCase
                 [
                     ['name' => 'editor', 'title' => 'Editor', 'roleables' => 34],
                 ],
-                'The roles.0.roleables field must be an array.',
+                'The role #1 roleables field must be an array.',
             ],
             'Non-String Elements In Roleables Array' => [
                 [
@@ -588,28 +588,28 @@ class AccessServiceTest extends BaseTestCase
                     ['name' => 'edit-post', 'title' => 'Edit Post'],
                     ['title' => 'View Post'],
                 ],
-                'The permissions.1.name field is required.',
+                'The permission #2 name field is required.',
             ],
             'Only String Permission Name' => [
                 [
                     ['name' => 'edit-post', 'title' => 'Edit Post'],
                     ['name' => 34, 'title' => 'View Post'],
                 ],
-                'The permissions.1.name field must be a string.',
+                'The permission #2 name field must be a string.',
             ],
             'Only String Permission Title' => [
                 [
                     ['name' => 'edit-post', 'title' => 'Edit Post'],
                     ['name' => 'delete-post', 'title' => 64],
                 ],
-                'The permissions.1.title field must be a string.',
+                'The permission #2 title field must be a string.',
             ],
             'Unique Permission Name' => [
                 [
                     ['name' => 'edit-post', 'title' => 'Edit Post'],
                     ['name' => 'delete-post', 'title' => 'New Delete Post'],
                 ],
-                'The permissions.1.name has already been taken.',
+                'The permission #2 name has already been taken.',
                 fn ($_this) => $_this->getAccessService()->createPermission(['name' => 'delete-post', 'title' => 'Delete Post']),
             ],
             'Duplicate Permission Name' => [
