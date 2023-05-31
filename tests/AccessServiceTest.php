@@ -280,7 +280,7 @@ class AccessServiceTest extends BaseTestCase
                 [
                     ['name' => 'editor', 'title' => 'Editor', 'roleables' => [Post::class, Post::class]],
                 ],
-                'The roles.0.roleables.0 field has a duplicate value.',
+                'Role #0 has duplicate roleables.',
             ],
         ];
     }

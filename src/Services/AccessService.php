@@ -68,7 +68,8 @@ class AccessService implements Accessable
     public function createManyRoles(array $roles): bool
     {
         $validator = Validator::make(['roles' => $roles], [
-            'roles' => 'array|min:1',
+            'roles' => 'present|array|min:1',
+            'roles.*' => 'array',
             'roles.*.name' => ['required', 'string', 'unique:roles,name', function ($attribute, $value, $fail) use ($roles) {
                 //make sure name is unique among other names in roles array
                 if (count(array_filter($roles, fn ($r) => isset($r['name']) && $r['name'] === $value)) !== 1) {
@@ -77,7 +78,18 @@ class AccessService implements Accessable
             }],
             'roles.*.title' => 'required|string',
             'roles.*.roleables' => 'array|nullable',
-            'roles.*.roleables.*' => 'string|distinct',
+            'roles.*.roleables.*' => ['string', function ($attribute, $value, $fail) use ($roles) {
+                [, $rollNumber] = explode('.', $attribute);
+                if (is_numeric($rollNumber)) {
+                    $roleables = $roles[intval($rollNumber)]['roleables'];
+
+                    if (count($roleables) !== count(array_flip($roleables))) {
+                        $fail('Role #'.$rollNumber.' has duplicate roleables.');
+                    }
+                } else {
+                    $fail('One of the roleables is not valid.');
+                }
+            }],
         ], [], [
             'roles.*.name' => 'role #:position name',
             'roles.*.title' => 'role #:position title',
@@ -161,7 +173,8 @@ class AccessService implements Accessable
     public function createManyPermissions(array $permissions): bool
     {
         $validator = Validator::make(['permissions' => $permissions], [
-            'permissions' => 'array|min:1',
+            'permissions' => 'present|array|min:1',
+            'permissions.*' => 'array',
             'permissions.*.name' => ['required', 'string', 'unique:permissions,name', function ($attribute, $value, $fail) use ($permissions) {
                 //make sure name is unique among other names in permissions array
                 if (count(array_filter($permissions, fn ($p) => isset($p['name']) && $p['name'] === $value)) !== 1) {
