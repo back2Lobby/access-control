@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class AccessService implements Accessable
 {
@@ -122,7 +123,7 @@ class AccessService implements Accessable
     {
         if ($role = $this->getCacheStore()->getRole($role)) {
             $validator = Validator::make($attributes, [
-                'name' => 'string|unique:roles,name',
+                'name' => ['string', Rule::unique('roles', 'name')->ignore($role->id, 'id')],
                 'title' => 'string',
                 'roleables' => 'array|nullable',
                 'roleables.*' => 'string|distinct',
@@ -213,7 +214,7 @@ class AccessService implements Accessable
     {
         if ($permission = $this->getCacheStore()->getPermission($permission)) {
             $validator = Validator::make($attributes, [
-                'name' => 'string|unique:permissions,name',
+                'name' => ['string', Rule::unique('permissions', 'name')->ignore($permission->id, 'id')],
                 'title' => 'string',
                 'description' => 'string|nullable',
             ]);
