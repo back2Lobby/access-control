@@ -344,12 +344,13 @@ class AccessServiceTest extends BaseTestCase
      *
      * @test
      */
-    public function it_throws_exception_when_invalid_attributes_are_provided_to_update_a_role(array $attributes, string $expectedErrorMessage = null)
+    public function it_throws_exception_when_invalid_attributes_are_provided_to_update_a_role(array $attributes, string $expectedErrorMessage = null, \Closure $init = null)
     {
-        $role = $this->getAccessService()->createRole([
-            'name' => 'admin',
-            'title' => 'Admin',
-        ]);
+        if ($init) {
+            $init($this);
+        }
+
+        $role = $this->getAccessService()->createRole(['name' => 'admin', 'title' => 'Admin']);
 
         $this->assertException(InvalidAttributesException::class, function () use ($role, $attributes) {
             $this->getAccessService()->updateRole($role, $attributes);
@@ -368,9 +369,11 @@ class AccessServiceTest extends BaseTestCase
                 'The title field must be a string.',
             ],
             'Unique Name' => [
-                ['name' => 'admin', 'title' => 'New Admin'],
+                ['name' => 'manager', 'title' => 'Admin'],
                 'The name has already been taken.',
-                fn ($_this) => $_this->getAccessService()->createRole(['name' => 'admin', 'title' => 'Admin']),
+                function ($_this) {
+                    $_this->getAccessService()->createRole(['name' => 'manager', 'title' => 'Manager']);
+                },
             ],
             'Non Array Roleables' => [
                 ['roleables' => 34],
@@ -679,12 +682,12 @@ class AccessServiceTest extends BaseTestCase
     public function it_throws_exception_when_invalid_attributes_are_provided_to_update_a_permission(array $attributes, string $expectedErrorMessage = null, \Closure $init = null)
     {
         if ($init) {
-            $init();
+            $init($this);
         }
 
         $permission = $this->getAccessService()->createPermission([
-            'name' => 'admin',
-            'title' => 'Admin',
+            'name' => 'edit-post',
+            'title' => 'Edit Post',
         ]);
 
         $this->assertException(InvalidAttributesException::class, function () use ($permission, $attributes) {
@@ -704,9 +707,9 @@ class AccessServiceTest extends BaseTestCase
                 'The title field must be a string.',
             ],
             'Unique Name' => [
-                ['name' => 'edit-post', 'title' => 'New Edit Post'],
+                ['name' => 'delete-post', 'title' => 'Edit Post'],
                 'The name has already been taken.',
-                fn () => Permission::factory()->createFake(['name' => 'edit-post']),
+                fn ($_this) => $_this->getAccessService()->createPermission(['name' => 'delete-post', 'title' => 'Delete Post']),
             ],
             'Only String Description' => [
                 ['name' => 'edit-post', 'title' => 'Edit Post', 'description' => 6346],
